@@ -21,6 +21,12 @@ track handover — with a configurable fee/commission engine and a complete admi
 
 ## Quick start
 
+**Windows, one click:** install Node.js LTS and Docker Desktop, start Docker Desktop, then double-click
+`start-windows.bat` in this folder. It starts the database, installs packages, loads demo data on the
+first run and opens http://localhost:3000. Run `start-windows.bat reset` to reload fresh demo data.
+
+**Any OS, manual steps:**
+
 ```bash
 # 1. Postgres (or use an existing server)
 docker compose up -d            # postgres:16 on :5432 (user/pass postgres/postgres)
