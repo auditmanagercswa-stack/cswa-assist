@@ -1,0 +1,122 @@
+@import "tailwindcss";
+
+/* ───────── AutoBidX design tokens ───────── */
+@theme {
+  --font-display: "Book Antiqua", "Palatino Linotype", Palatino, "URW Palladio L", "P052", Georgia, serif;
+  --font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif;
+
+  --color-ink-950: #060a12;
+  --color-ink-900: #0b1220;
+  --color-ink-800: #131c2e;
+  --color-ink-700: #1d2940;
+  --color-ink-600: #2c3a55;
+
+  --color-ignite-50: #fff4ee;
+  --color-ignite-100: #ffe4d4;
+  --color-ignite-400: #ff7a45;
+  --color-ignite-500: #f2551d;
+  --color-ignite-600: #d94511;
+  --color-ignite-700: #b3370c;
+
+  --color-gold-400: #d4b26a;
+  --color-gold-500: #b8963e;
+
+  --color-verified-50: #ecfdf5;
+  --color-verified-500: #0e9f6e;
+  --color-verified-600: #057a55;
+
+  --radius-card: 14px;
+  --shadow-card: 0 1px 2px rgb(11 18 32 / 0.04), 0 4px 16px -4px rgb(11 18 32 / 0.08);
+  --shadow-lift: 0 2px 4px rgb(11 18 32 / 0.06), 0 16px 40px -12px rgb(11 18 32 / 0.22);
+
+  --animate-pulse-soft: pulse-soft 2s ease-in-out infinite;
+  @keyframes pulse-soft {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.45; }
+  }
+  --animate-flash: flash 1.2s ease-out;
+  @keyframes flash {
+    0% { background-color: rgb(242 85 29 / 0.18); }
+    100% { background-color: transparent; }
+  }
+}
+
+:root {
+  color-scheme: light;
+  --bg: #f6f7f9;
+  --surface: #ffffff;
+  --border: #e4e7ec;
+  --text: #0b1220;
+  --muted: #5b6577;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-sans);
+  font-feature-settings: "tnum" 0;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+@layer base {
+  h1, h2, h3 {
+    font-family: var(--font-display);
+    letter-spacing: -0.01em;
+  }
+}
+
+.num {
+  font-variant-numeric: tabular-nums;
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-ignite-500);
+  outline-offset: 2px;
+}
+
+/* Hide scrollbars on horizontal chip rails while keeping them scrollable */
+.scroll-rail {
+  scrollbar-width: none;
+}
+.scroll-rail::-webkit-scrollbar {
+  display: none;
+}
+
+.prose-cms h2 {
+  font-size: 1.35rem;
+  margin: 1.6rem 0 0.6rem;
+  font-weight: 700;
+}
+.prose-cms h3 {
+  font-size: 1.1rem;
+  margin: 1.2rem 0 0.4rem;
+  font-weight: 700;
+}
+.prose-cms p {
+  margin: 0.6rem 0;
+  line-height: 1.75;
+  color: #2c3443;
+}
+.prose-cms ul {
+  list-style: disc;
+  padding-left: 1.3rem;
+  margin: 0.6rem 0;
+}
+.prose-cms li {
+  margin: 0.3rem 0;
+  line-height: 1.65;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

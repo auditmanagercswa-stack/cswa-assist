@@ -1,0 +1,9 @@
+node_modules
+.next
+storage
+.env
+*.tsbuildinfo
+next-env.d.ts
+coverage
+test-results
+storage-test
