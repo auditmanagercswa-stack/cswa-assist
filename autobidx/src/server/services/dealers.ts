@@ -97,7 +97,7 @@ export async function adminReviewKyc(actor: Actor, dealerId: string, decision: "
       await notifyDealer(dealerId, {
         type: decision === "APPROVE" ? "KYC_APPROVED" : "KYC_REJECTED",
         title: decision === "APPROVE" ? "Your dealership is verified 🎉" : "KYC needs attention",
-        body: decision === "APPROVE" ? "You can now list vehicles, bid in auctions and buy on AutoBidX." : `Reason: ${notes}`,
+        body: decision === "APPROVE" ? "You can now list vehicles, bid in auctions and buy on Alpha Cars." : `Reason: ${notes}`,
         link: decision === "APPROVE" ? "/dashboard" : "/dashboard/kyc",
       }, tx);
   });

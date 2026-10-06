@@ -234,26 +234,26 @@ export const TESTIMONIALS = [
 ];
 
 export const FAQS = [
-  { q: "Who can buy and sell on AutoBidX?", a: "AutoBidX is a dealer-to-dealer marketplace. Any registered used-car dealership in India can join. Bidding and buying are enabled once your KYC (PAN, GST, business registration and bank details) is verified — usually within one business day.", c: "GENERAL" },
+  { q: "Who can buy and sell on Alpha Cars?", a: "Alpha Cars is a dealer-to-dealer marketplace. Any registered used-car dealership in India can join. Bidding and buying are enabled once your KYC (PAN, GST, business registration and bank details) is verified — usually within one business day.", c: "GENERAL" },
   { q: "How does bidding work?", a: "Each auction has a starting bid and a fixed bid increment. Your bid must be at least the current bid plus the increment. All bids are validated on our servers — the countdown you see is synced to server time.", c: "BIDDING" },
-  { q: "What is proxy (auto) bidding?", a: "Set the maximum you're willing to pay and AutoBidX bids on your behalf only as much as needed to keep you in the lead. Your maximum is never shown to anyone, including the seller.", c: "BIDDING" },
+  { q: "What is proxy (auto) bidding?", a: "Set the maximum you're willing to pay and Alpha Cars bids on your behalf only as much as needed to keep you in the lead. Your maximum is never shown to anyone, including the seller.", c: "BIDDING" },
   { q: "Why did the auction end time change?", a: "To prevent last-second sniping, a bid placed in the final minutes extends the auction (2 minutes by default). This gives every bidder a fair chance to respond.", c: "BIDDING" },
   { q: "What happens if the reserve price isn't met?", a: "The auction ends as 'Reserve not met'. The seller may still accept the highest bid within 24 hours or relist the vehicle.", c: "BIDDING" },
-  { q: "What fees does AutoBidX charge?", a: "Buyers pay a small platform fee and a processing fee (plus GST). Sellers pay a transaction fee on successful sales and, depending on plan, a listing fee. The exact breakdown is shown before you confirm any purchase.", c: "FEES" },
-  { q: "How are payments protected?", a: "Payments are made to AutoBidX via UPI, net banking, card or bank transfer, and are confirmed only after verification with the payment provider. Seller payouts are released after the buyer confirms delivery.", c: "PAYMENTS" },
+  { q: "What fees does Alpha Cars charge?", a: "Buyers pay a small platform fee and a processing fee (plus GST). Sellers pay a transaction fee on successful sales and, depending on plan, a listing fee. The exact breakdown is shown before you confirm any purchase.", c: "FEES" },
+  { q: "How are payments protected?", a: "Payments are made to Alpha Cars via UPI, net banking, card or bank transfer, and are confirmed only after verification with the payment provider. Seller payouts are released after the buyer confirms delivery.", c: "PAYMENTS" },
   { q: "What if the car doesn't match the listing?", a: "Raise a dispute from the order page before confirming delivery. Our team investigates with both parties and can hold payouts, arrange refunds or apply penalties as per the Dispute Policy.", c: "PAYMENTS" },
 ];
 
 export const LEGAL_BODY: Record<string, string> = {
   terms: `## Introduction
-These Terms govern your use of the AutoBidX marketplace. By creating an account you agree to them.
+These Terms govern your use of the Alpha Cars marketplace. By creating an account you agree to them.
 
 ## Accounts
 - You must provide accurate business and KYC information.
 - You are responsible for activity under your account and your team members' accounts.
 
 ## Marketplace role
-AutoBidX provides a platform for dealers to list, bid on and buy vehicles. AutoBidX is not the seller of any vehicle.
+Alpha Cars provides a platform for dealers to list, bid on and buy vehicles. Alpha Cars is not the seller of any vehicle.
 
 ## Fees
 Fees are published in the Fee Policy and shown before every transaction.
@@ -297,7 +297,7 @@ Approved refunds are initiated to the original payment method; bank processing t
 *Template content — review with counsel before production use.*`,
   "auction-rules": `## Bids
 - Minimum next bid = current bid + bid increment.
-- Bids are validated by AutoBidX servers; the server clock is authoritative.
+- Bids are validated by Alpha Cars servers; the server clock is authoritative.
 
 ## Anti-sniping
 A bid placed in the final trigger window extends the auction by the configured extension.

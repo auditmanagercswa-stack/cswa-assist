@@ -62,7 +62,7 @@ export function OrderActions({ orderId, actions, apiBase = "/api/orders" }: { or
         )}
         {modal === "COMPLETED" && <p className="mb-3 text-sm text-slate-600">Confirm only after you&apos;ve received the vehicle and original documents. This releases the seller&apos;s payout. If something&apos;s wrong, raise a dispute instead.</p>}
         {modal === "VEHICLE_READY" && <p className="mb-3 text-sm text-slate-600">The RC copy must be uploaded before marking the vehicle ready.</p>}
-        {modal === "CANCELLED" && <p className="mb-3 text-sm text-slate-600">The vehicle will go back on the marketplace. Paid orders are cancelled by AutoBidX support with a refund.</p>}
+        {modal === "CANCELLED" && <p className="mb-3 text-sm text-slate-600">The vehicle will go back on the marketplace. Paid orders are cancelled by Alpha Cars support with a refund.</p>}
         <Field label={modal === "CANCELLED" ? "Reason" : "Note (optional)"}><Textarea rows={3} value={note} onChange={(e) => setNote(e.target.value)} /></Field>
       </Modal>
     </div>
@@ -116,7 +116,7 @@ export function RaiseDispute({ orderId, party }: { orderId: string; party: "buye
     <>
       <Button variant="ghost" size="sm" className="text-red-600" onClick={() => setOpen(true)}>Raise a dispute</Button>
       <Modal open={open} onClose={() => setOpen(false)} title="Raise a dispute" footer={<><Button variant="outline" onClick={() => setOpen(false)}>Cancel</Button><Button variant="danger" loading={busy} onClick={submit}>Submit dispute</Button></>}>
-        <p className="mb-4 text-sm text-slate-600">The order is paused and any payout held while AutoBidX investigates.</p>
+        <p className="mb-4 text-sm text-slate-600">The order is paused and any payout held while Alpha Cars investigates.</p>
         <div className="space-y-3">
           <Field label="Category"><Select value={f.category} onChange={(e) => setF({ ...f, category: e.target.value })}>{cats.map((c) => <option key={c} value={c}>{CATS[c]}</option>)}</Select></Field>
           <Field label="Subject" error={errors.subject}><Input value={f.subject} onChange={(e) => setF({ ...f, subject: e.target.value })} maxLength={120} /></Field>
@@ -148,7 +148,7 @@ export function DisputeThread({ dispute, isAdmin = false }: { dispute: { id: str
         {dispute.messages.map((m) => (
           <li key={m.id} className={cn("rounded-xl p-3 text-[13.5px]", m.internal ? "border border-dashed border-amber-300 bg-amber-50" : m.kind === "STATUS" ? "bg-slate-50 text-slate-600" : m.isStaff ? "bg-ink-900/[0.04]" : "bg-white ring-1 ring-slate-200")}>
             <div className="mb-1 flex items-center justify-between gap-2 text-[12px] text-slate-500">
-              <span className="font-semibold text-ink-900">{m.author}{m.isStaff && " · AutoBidX"}{m.internal && " · internal note"}{m.kind === "DOCUMENT_REQUEST" && " · documents requested"}</span>
+              <span className="font-semibold text-ink-900">{m.author}{m.isStaff && " · Alpha Cars"}{m.internal && " · internal note"}{m.kind === "DOCUMENT_REQUEST" && " · documents requested"}</span>
               <span suppressHydrationWarning>{timeAgo(m.createdAt)}</span>
             </div>
             <div className="whitespace-pre-line text-slate-700">{m.body}</div>

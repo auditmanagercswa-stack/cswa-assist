@@ -26,9 +26,9 @@ type Ctx = { doc: PDFDocument; page: PDFPage; font: PDFFont; bold: PDFFont; ital
 
 async function begin(title: string, subtitle: string, meta: [string, string][]): Promise<Ctx> {
   const doc = await PDFDocument.create();
-  doc.setTitle(`AutoBidX — ${title}`);
-  doc.setProducer("AutoBidX");
-  doc.setCreator("AutoBidX Platform");
+  doc.setTitle(`Alpha Cars — ${title}`);
+  doc.setProducer("Alpha Cars");
+  doc.setCreator("Alpha Cars Platform");
   const page = doc.addPage([595.28, 841.89]); // A4
   const font = await doc.embedFont(StandardFonts.TimesRoman);
   const bold = await doc.embedFont(StandardFonts.TimesRomanBold);
@@ -195,11 +195,11 @@ export async function invoicePdf(d: InvoiceData) {
   if (d.type === "BUYER_TAX_INVOICE" && d.vehiclePrice != null) {
     heading(ctx, "Statement of amount payable");
     table(ctx, [
-      { label: "Vehicle price (payable to seller via AutoBidX)", value: rs(d.vehiclePrice) },
+      { label: "Vehicle price (payable to seller via Alpha Cars)", value: rs(d.vehiclePrice) },
       { label: "Platform fees incl. GST (this invoice)", value: rs(d.total) },
       { label: "Total payable by buyer", value: rs(d.vehiclePrice + d.total), bold: true },
     ]);
-    paragraph(ctx, "The vehicle is sold by the listed dealer. AutoBidX acts as a marketplace facilitator and collects the vehicle price on the seller's behalf. GST on the vehicle, if applicable, is the seller's responsibility under their own invoice.", 8.5, MUTED);
+    paragraph(ctx, "The vehicle is sold by the listed dealer. Alpha Cars acts as a marketplace facilitator and collects the vehicle price on the seller's behalf. GST on the vehicle, if applicable, is the seller's responsibility under their own invoice.", 8.5, MUTED);
   }
   return finish(ctx, `${d.platform.legalName} · ${d.platform.address} · This is a computer-generated invoice.`);
 }
@@ -254,7 +254,7 @@ export async function saleAgreementPdf(d: SaleData) {
       "b) The Seller shall hand over the original RC, valid insurance, service records, keys and duplicate keys, and sign Forms 29 & 30 for ownership transfer.",
       "c) Risk in the vehicle passes to the Buyer on delivery or pickup as recorded on the delivery challan.",
       "d) The Buyer shall complete the RTO ownership transfer within the period prescribed by law. Pending challans up to the date of delivery are the Seller's responsibility.",
-      "e) AutoBidX is a marketplace facilitator and not a party to this sale. Disputes are handled under the AutoBidX Dispute Policy.",
+      "e) Alpha Cars is a marketplace facilitator and not a party to this sale. Disputes are handled under the Alpha Cars Dispute Policy.",
       "This template is provided for convenience; parties should review it with their own advisors.",
     ].join("\n"),
     9.5,

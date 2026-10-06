@@ -12,7 +12,7 @@ import { GatewaySignatureError, type GatewayEvent, type PaymentGateway } from ".
  */
 export const mockGateway: PaymentGateway = {
   name: "mock",
-  displayName: "AutoBidX Sandbox Gateway",
+  displayName: "Alpha Cars Sandbox Gateway",
   async createOrder(input) {
     return { gatewayOrderId: `mock_order_${shortCode(12)}`, redirectUrl: `/pay/mock/${input.paymentId}` };
   },

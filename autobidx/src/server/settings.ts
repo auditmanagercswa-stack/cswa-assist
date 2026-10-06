@@ -51,7 +51,7 @@ export const SETTING_DEFS = {
   // ── Tax
   "gst.rateBps": { group: "Tax", label: "Default GST rate on platform fees (bps, 1800 = 18%)", default: 1800 as number },
   "gst.platformGstin": { group: "Tax", label: "Platform GSTIN (shown on invoices)", default: "32ABXPL0000A1Z5" as string },
-  "gst.platformLegalName": { group: "Tax", label: "Platform legal entity name", default: "AutoBidX Technologies Pvt. Ltd." as string },
+  "gst.platformLegalName": { group: "Tax", label: "Platform legal entity name", default: "Alpha Cars Pre Owned Pvt. Ltd." as string },
   "gst.platformAddress": { group: "Tax", label: "Platform registered address", default: "Infopark Phase 2, Kakkanad, Kochi, Kerala 682042" as string },
 
   // ── Dealers
@@ -76,7 +76,7 @@ export const SETTING_DEFS = {
   "payments.bankTransferDetails": {
     group: "Payments",
     label: "Bank transfer instructions",
-    default: "AutoBidX Escrow A/c · Federal Bank · IFSC FDRL0001234 · A/c 1234 5678 9012 (demo details)" as string,
+    default: "Alpha Cars Escrow A/c · Federal Bank · IFSC FDRL0001234 · A/c 1234 5678 9012 (demo details)" as string,
   },
 
   // ── Notifications
@@ -94,7 +94,7 @@ export const SETTING_DEFS = {
   "fraud.bidCancellationThreshold": { group: "Fraud", label: "Bid cancellations (30 days) before flag", default: 3 as number },
 
   // ── Platform
-  "platform.supportEmail": { group: "Platform", label: "Support email", default: "support@autobidx.in" as string },
+  "platform.supportEmail": { group: "Platform", label: "Support email", default: "support@alphacars.in" as string },
   "platform.supportPhone": { group: "Platform", label: "Support phone", default: "+91 484 400 0000" as string },
 } as const;
 

@@ -9,9 +9,9 @@ import { safeNext } from "@/lib/slug";
 export const metadata: Metadata = { title: "Sign in", robots: { index: false } };
 
 const DEMO = [
-  { role: "Super Admin", email: "admin@autobidx.in", password: "Admin@123" },
-  { role: "Dealer — Seller", email: "seller@autobidx.in", password: "Demo@1234" },
-  { role: "Dealer — Buyer", email: "buyer@autobidx.in", password: "Demo@1234" },
+  { role: "Super Admin", email: "admin@alphacars.in", password: "Admin@123" },
+  { role: "Dealer — Seller", email: "seller@alphacars.in", password: "Demo@1234" },
+  { role: "Dealer — Buyer", email: "buyer@alphacars.in", password: "Demo@1234" },
 ];
 
 export default async function LoginPage({ searchParams }: { searchParams: Promise<{ next?: string }> }) {

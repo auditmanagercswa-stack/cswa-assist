@@ -30,7 +30,7 @@ export const razorpayGateway: PaymentGateway = {
     return {
       gatewayOrderId: order.id,
       redirectUrl: null,
-      clientPayload: { key: a.id, order_id: order.id, amount: input.amount * 100, currency: "INR", name: "AutoBidX", description: input.description, prefill: input.customer },
+      clientPayload: { key: a.id, order_id: order.id, amount: input.amount * 100, currency: "INR", name: "Alpha Cars", description: input.description, prefill: input.customer },
     };
   },
   async verifyCallback(p) {

@@ -125,7 +125,7 @@ export async function inspectionReportPdfFor(inspectionId: string) {
     vehicleTitle: ins.vehicle.title,
     code: ins.vehicle.code,
     inspectedAt: ins.inspectedAt ?? ins.updatedAt,
-    inspector: ins.inspectorName ?? "AutoBidX Inspection Partner",
+    inspector: ins.inspectorName ?? "Alpha Cars Inspection Partner",
     score: ins.score,
     grade: scoreGrade(ins.score),
     items: (ins.checklist as { label: string; rating: number; notes?: string }[]) ?? [],

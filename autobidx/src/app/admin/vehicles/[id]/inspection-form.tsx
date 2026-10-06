@@ -12,7 +12,7 @@ export function InspectionForm({ vehicleId, inspectionId, checklist }: { vehicle
   const { push } = useToast();
   const [ratings, setRatings] = useState<Record<string, number>>(Object.fromEntries(checklist.map((c) => [c.key, 8])));
   const [notes, setNotes] = useState<Record<string, string>>({});
-  const [inspector, setInspector] = useState("AutoBidX Assured — Kochi");
+  const [inspector, setInspector] = useState("Alpha Cars Assured — Kochi");
   const [summary, setSummary] = useState("");
   const [odo, setOdo] = useState(true);
   const [busy, setBusy] = useState(false);

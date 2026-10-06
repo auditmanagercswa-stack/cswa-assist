@@ -40,7 +40,7 @@ export function LoginForm({ demo }: { demo: { role: string; email: string; passw
         {err && <div className="rounded-lg bg-red-50 px-3 py-2.5 text-[13.5px] text-red-700" role="alert">{err}</div>}
         <Button type="submit" size="lg" block loading={busy}>Sign in</Button>
       </form>
-      <p className="mt-6 text-center text-sm text-slate-600">New to AutoBidX? <Link href="/register" className="font-semibold text-ink-900 underline">Join as a dealer</Link></p>
+      <p className="mt-6 text-center text-sm text-slate-600">New to Alpha Cars? <Link href="/register" className="font-semibold text-ink-900 underline">Join as a dealer</Link></p>
       {demo.length > 0 && (
         <div className="mt-8 rounded-2xl border border-dashed border-amber-300 bg-amber-50/60 p-4">
           <div className="flex items-center gap-2 text-[12px] font-bold uppercase tracking-wider text-amber-700"><KeyRound className="h-4 w-4" />Demo accounts (development mode only)</div>

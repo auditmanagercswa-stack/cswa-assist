@@ -1,24 +1,24 @@
 import Link from "next/link";
 import { cn } from "@/lib/cn";
 
+/** The Alpha Cars "A" mark on its black ground. */
 export function LogoMark({ className }: { className?: string }) {
   return (
-    <svg viewBox="0 0 40 40" className={cn("h-8 w-8", className)} aria-hidden>
-      <rect width="40" height="40" rx="10" fill="#0b1220" />
-      <path d="M11 28 L18.5 12 L22 12 L29.5 28 L25.6 28 L20.2 15.6 L14.9 28 Z" fill="#ffffff" />
-      <path d="M15.5 23 L25 23" stroke="#f2551d" strokeWidth="3" strokeLinecap="round" />
-      <circle cx="30.5" cy="11" r="3" fill="#f2551d" />
-    </svg>
+    // eslint-disable-next-line @next/next/no-img-element
+    <img src="/brand/alpha-mark.png" alt="" aria-hidden width={48} height={31} className={cn("h-8 w-auto mix-blend-lighten", className)} />
   );
 }
 
+/**
+ * Horizontal lockup: "A" mark + ALPHA / CARS / PRE OWNED CARS wordmark.
+ * The artwork sits on black, so on light surfaces it is placed on a black plate.
+ */
 export function Logo({ dark = false, className }: { dark?: boolean; className?: string }) {
   return (
-    <Link href="/" className={cn("flex items-center gap-2", className)} aria-label="AutoBidX home">
-      <LogoMark />
-      <span className={cn("font-display text-[21px] font-bold tracking-tight", dark ? "text-white" : "text-ink-900")}>
-        Auto<span className="text-ignite-500">BidX</span>
-      </span>
+    <Link href="/" aria-label="Alpha Cars home" className={cn("flex shrink-0 items-center gap-2", !dark && "rounded-lg bg-black px-2.5 py-1.5", className)}>
+      <LogoMark className="h-9" />
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img src="/brand/alpha-wordmark.png" alt="Alpha Cars" width={752} height={241} className="h-9 w-auto mix-blend-lighten" />
     </Link>
   );
 }

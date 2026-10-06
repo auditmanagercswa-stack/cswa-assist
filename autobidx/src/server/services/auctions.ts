@@ -335,7 +335,7 @@ export async function adminCancelBid(bidId: string, actor: Actor, reason: string
     });
     await tx.vehicle.update({ where: { id: auction.vehicleId }, data: { currentBid: after.currentBid, bidCount: after.bidCount } });
     await audit({ userId: actor.userId, action: "bid.cancel", entityType: "Bid", entityId: bidId, before: { amount: bid.amount, bidderId: bid.bidderId }, after: { reason } }, tx);
-    await notify(bid.bidderId, { type: "SYSTEM", title: "A bid was cancelled", body: `Your bid of ${formatINR(bid.amount)} on ${auction.vehicleTitle} was cancelled by AutoBidX. Reason: ${reason}`, link: `/auctions/${auction.id}` }, tx);
+    await notify(bid.bidderId, { type: "SYSTEM", title: "A bid was cancelled", body: `Your bid of ${formatINR(bid.amount)} on ${auction.vehicleTitle} was cancelled by Alpha Cars. Reason: ${reason}`, link: `/auctions/${auction.id}` }, tx);
     await publish({ type: "auction.update", auctionId: auction.id, data: { reason: "bid_cancelled" } }, tx);
   }).then(async () => {
     const bid = await prisma.bid.findUnique({ where: { id: bidId }, select: { bidderId: true } });
@@ -532,7 +532,7 @@ export async function adminCancelAuction(auctionId: string, actor: Actor, reason
     await audit({ userId: actor.userId, action: "auction.admin_cancel", entityType: "Auction", entityId: auctionId, after: { reason } }, tx);
     const bidders = await tx.bid.findMany({ where: { auctionId }, distinct: ["bidderId"], select: { bidderId: true } });
     if (bidders.length)
-      await notify(bidders.map((b) => b.bidderId), { type: "SYSTEM", title: "Auction cancelled", body: `The auction for ${a.vehicleTitle} was cancelled by AutoBidX. Reason: ${reason}`, link: `/auctions/${auctionId}` }, tx);
+      await notify(bidders.map((b) => b.bidderId), { type: "SYSTEM", title: "Auction cancelled", body: `The auction for ${a.vehicleTitle} was cancelled by Alpha Cars. Reason: ${reason}`, link: `/auctions/${auctionId}` }, tx);
     await notifyDealer(a.vehicleDealerId, { type: "SYSTEM", title: "Auction cancelled by admin", body: `${a.vehicleTitle}: ${reason}`, link: "/dashboard/auctions" }, tx);
     await publish({ type: "auction.closed", auctionId, data: { result: "CANCELLED" } }, tx);
   });

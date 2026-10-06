@@ -1,4 +1,4 @@
-// AutoBidX — relational schema.
+// Alpha Cars — relational schema.
 // Money is stored as integer rupees (INR). Percentages are stored in basis points (1% = 100 bps).
 
 generator client {

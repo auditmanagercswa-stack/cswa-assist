@@ -25,12 +25,12 @@ export default async function MockGatewayPage({ params }: { params: Promise<{ pa
           <div className="text-[12px] text-white/60">Simulates a hosted checkout for development. No real money moves.</div>
         </div>
         <div className="space-y-3 p-6">
-          <div className="flex justify-between text-sm"><span className="text-slate-500">Merchant</span><span className="font-semibold">AutoBidX</span></div>
+          <div className="flex justify-between text-sm"><span className="text-slate-500">Merchant</span><span className="font-semibold">Alpha Cars</span></div>
           <div className="flex justify-between text-sm"><span className="text-slate-500">Reference</span><span className="font-mono">{p.reference}</span></div>
           <div className="flex justify-between text-sm"><span className="text-slate-500">Method</span><span className="font-semibold">{humanize(p.method ?? "UPI")}</span></div>
           <div className="flex justify-between border-t pt-3"><span className="text-slate-500">Amount</span><span className="num text-2xl font-bold">{formatINR(p.amount)}</span></div>
           {p.status !== "PENDING" ? (
-            <div className="rounded-lg bg-slate-100 p-3 text-center text-sm">This payment is already {p.status.toLowerCase()}. <a className="font-semibold underline" href={back}>Return to AutoBidX</a></div>
+            <div className="rounded-lg bg-slate-100 p-3 text-center text-sm">This payment is already {p.status.toLowerCase()}. <a className="font-semibold underline" href={back}>Return to Alpha Cars</a></div>
           ) : (
             <MockGatewayActions paymentId={p.id} back={back} />
           )}

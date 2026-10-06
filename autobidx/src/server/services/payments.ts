@@ -210,7 +210,7 @@ async function serviceInvoiceTx(tx: Tx, p: Payment, description: string) {
   const dealer = p.dealerId ? await tx.dealer.findUnique({ where: { id: p.dealerId } }) : null;
   await tx.invoice.create({
     data: {
-      number: invoiceNumber("ABX-SV"),
+      number: invoiceNumber("ALC-SV"),
       type: "SERVICE_INVOICE",
       paymentId: p.id,
       dealerId: p.dealerId,

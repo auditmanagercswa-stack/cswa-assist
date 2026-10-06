@@ -28,7 +28,7 @@ async function login(page, email, password) {
 
 const buyerCtx = await browser.newContext({ viewport: { width: 390, height: 844 } }); // mobile bidding
 const buyer = await buyerCtx.newPage();
-await step("buyer signs in", () => login(buyer, "buyer@autobidx.in", "Demo@1234"));
+await step("buyer signs in", () => login(buyer, "buyer@alphacars.in", "Demo@1234"));
 
 await step("buyer places a bid from the mobile auction room", async () => {
   await buyer.goto(base + "/auctions");
@@ -69,7 +69,7 @@ await step("buyer pays a pending order through the sandbox gateway", async () =>
 const sellerCtx = await browser.newContext({ viewport: { width: 1366, height: 900 } });
 const seller = await sellerCtx.newPage();
 await step("seller confirms a paid sale", async () => {
-  await login(seller, "seller@autobidx.in", "Demo@1234");
+  await login(seller, "seller@alphacars.in", "Demo@1234");
   await seller.goto(base + "/dashboard/orders?side=selling");
   await seller.getByRole("heading", { name: "Orders & Transactions" }).waitFor();
   const hrefs = await seller.locator("table a", { hasText: "Details" }).evaluateAll((els) => els.map((e) => e.getAttribute("href")));
@@ -90,7 +90,7 @@ await step("seller confirms a paid sale", async () => {
 const adminCtx = await browser.newContext({ viewport: { width: 1366, height: 900 } });
 const admin = await adminCtx.newPage();
 await step("admin approves a pending listing", async () => {
-  await login(admin, "admin@autobidx.in", "Admin@123");
+  await login(admin, "admin@alphacars.in", "Admin@123");
   await admin.goto(base + "/admin/vehicles?status=PENDING_APPROVAL");
   await admin.getByRole("button", { name: "Approve" }).first().click();
   await admin.getByText("Listing approved").first().waitFor({ timeout: 15000 });

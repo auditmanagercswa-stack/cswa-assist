@@ -14,7 +14,7 @@ function stamp() {
   return `${String(d.getFullYear()).slice(2)}${String(d.getMonth() + 1).padStart(2, "0")}`;
 }
 
-export const orderNumber = () => `ABX-${stamp()}-${shortCode(6).toUpperCase()}`;
+export const orderNumber = () => `ALC-${stamp()}-${shortCode(6).toUpperCase()}`;
 export const paymentReference = () => `PAY-${stamp()}-${shortCode(8).toUpperCase()}`;
 export const invoiceNumber = (prefix: string) => `${prefix}/${stamp()}/${shortCode(6).toUpperCase()}`;
 export const disputeNumber = () => `DSP-${stamp()}-${shortCode(5).toUpperCase()}`;

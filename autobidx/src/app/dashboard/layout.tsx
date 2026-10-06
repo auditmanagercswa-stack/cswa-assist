@@ -6,7 +6,7 @@ import { getCurrentActor } from "@/server/auth/session";
 import { SiteHeader } from "@/components/layout/site-header";
 import { SideNav, type NavGroup } from "@/components/dashboard/sidebar";
 
-export const metadata = { title: { default: "Dashboard", template: "%s · Dashboard · AutoBidX" }, robots: { index: false } };
+export const metadata = { title: { default: "Dashboard", template: "%s · Dashboard · Alpha Cars" }, robots: { index: false } };
 
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
   const actor = await getCurrentActor();

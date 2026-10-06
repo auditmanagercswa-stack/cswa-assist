@@ -67,7 +67,7 @@ export async function registerDealer(input: z.infer<typeof registerDealerSchema>
       },
     });
     await audit({ userId: user.id, action: "auth.register", entityType: "Dealer", entityId: dealer.id, after: { email: user.email, dealer: dealer.name }, ip: meta.ip, userAgent: meta.userAgent }, tx);
-    await notify(user.id, { type: "REGISTRATION", title: "Welcome to AutoBidX", body: "Complete KYC to start buying and selling. Verification usually takes 1 business day.", link: "/dashboard/kyc" }, tx);
+    await notify(user.id, { type: "REGISTRATION", title: "Welcome to Alpha Cars", body: "Complete KYC to start buying and selling. Verification usually takes 1 business day.", link: "/dashboard/kyc" }, tx);
     return { user, dealer };
   });
   await issueOtp(result.user.id, "EMAIL_VERIFY").catch(() => {});
@@ -126,7 +126,7 @@ export async function issueOtp(userId: string, purpose: Extract<TokenPurpose, "E
   await prisma.verificationToken.updateMany({ where: { userId, purpose, consumedAt: null }, data: { consumedAt: new Date() } });
   await prisma.verificationToken.create({ data: { userId, purpose, tokenHash: sha256(`${userId}:${otp}`), expiresAt: new Date(Date.now() + 10 * 60_000) } });
   const channel = purpose === "EMAIL_VERIFY" ? providers.EMAIL : providers.SMS;
-  await channel.send({ to: { email: user.email, phone: user.phone, name: user.name }, title: "Your AutoBidX verification code", body: `Your code is ${otp}. It expires in 10 minutes.` });
+  await channel.send({ to: { email: user.email, phone: user.phone, name: user.name }, title: "Your Alpha Cars verification code", body: `Your code is ${otp}. It expires in 10 minutes.` });
   if (!env.isProduction && process.env.NODE_ENV !== "test") console.info(`[otp:${purpose}] ${user.email} → ${otp}`);
   // In non-production modes the OTP is returned so demos work without an SMS/email provider.
   return { devCode: env.isProduction ? null : otp };
@@ -154,7 +154,7 @@ export async function requestPasswordReset(email: string, meta: Meta) {
   const token = randomToken(32);
   await prisma.verificationToken.create({ data: { userId: user.id, purpose: "PASSWORD_RESET", tokenHash: sha256(token), expiresAt: new Date(Date.now() + 30 * 60_000) } });
   const link = `${env.appUrl}/reset-password?token=${token}`;
-  await providers.EMAIL.send({ to: { email: user.email, phone: user.phone, name: user.name }, title: "Reset your AutoBidX password", body: `Use this link within 30 minutes: ${link}`, link });
+  await providers.EMAIL.send({ to: { email: user.email, phone: user.phone, name: user.name }, title: "Reset your Alpha Cars password", body: `Use this link within 30 minutes: ${link}`, link });
   await audit({ userId: user.id, action: "auth.password_reset_requested", entityType: "User", entityId: user.id, ip: meta.ip });
   return { devLink: env.isProduction ? null : link };
 }

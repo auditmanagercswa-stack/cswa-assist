@@ -68,7 +68,7 @@ export default async function HomePage() {
     <>
       {/* ───────── HERO ───────── */}
       <section className="relative overflow-hidden bg-ink-950 pb-20 pt-28 text-white sm:pb-28 sm:pt-32">
-        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_70%_60%_at_75%_30%,rgba(242,85,29,0.22),transparent_60%),radial-gradient(ellipse_50%_50%_at_10%_90%,rgba(42,120,214,0.18),transparent_60%)]" />
+        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_70%_60%_at_75%_30%,rgba(224,27,36,0.22),transparent_60%),radial-gradient(ellipse_50%_50%_at_10%_90%,rgba(200,204,214,0.12),transparent_60%)]" />
         <div className="pointer-events-none absolute inset-0 opacity-[0.07] [background-image:linear-gradient(rgba(255,255,255,.6)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,.6)_1px,transparent_1px)] [background-size:56px_56px]" />
         <div className="relative mx-auto grid max-w-7xl items-center gap-10 px-4 sm:px-6 lg:grid-cols-[1.05fr_1fr]">
           <div>
@@ -77,7 +77,7 @@ export default async function HomePage() {
               {stats.liveAuctions} live auctions right now
             </div>
             <h1 className="mt-5 text-[40px] font-bold leading-[1.05] sm:text-[56px] lg:text-[62px]">
-              India&apos;s Smarter <span className="whitespace-nowrap text-ignite-400">Used-Car</span> Marketplace
+              Pre-Owned Cars from <span className="text-ignite-400">Verified Dealers</span>
             </h1>
             <p className="mt-5 max-w-xl text-[17px] leading-relaxed text-white/75 sm:text-lg">
               Buy used cars from verified dealers through competitive bidding. Thousands of verified vehicles. Competitive bidding. Transparent transactions.
@@ -269,9 +269,9 @@ export default async function HomePage() {
       <section className="mx-auto max-w-7xl px-4 pt-20 sm:px-6">
         <div className="grid items-center gap-10 lg:grid-cols-2">
           <div>
-            <div className="text-[12px] font-bold uppercase tracking-wider text-ignite-600">Why AutoBidX</div>
+            <div className="text-[12px] font-bold uppercase tracking-wider text-ignite-600">Why Alpha Cars</div>
             <h2 className="mt-1 text-[28px] font-bold text-ink-900 sm:text-[34px]">Designed for how dealers actually trade</h2>
-            <p className="mt-3 text-slate-600">Classified listings leave you chasing calls. AutoBidX turns trade-ins into a competitive, time-boxed market — with the paperwork handled.</p>
+            <p className="mt-3 text-slate-600">Classified listings leave you chasing calls. Alpha Cars turns trade-ins into a competitive, time-boxed market — with the paperwork handled.</p>
             <div className="mt-8 grid gap-5 sm:grid-cols-2">
               {[
                 [TrendingUp, "Better prices", "Competition among verified buyers lifts final prices above typical trade-in quotes."],
@@ -311,7 +311,7 @@ export default async function HomePage() {
       {/* ───────── TESTIMONIALS ───────── */}
       {testimonials.length > 0 && (
         <section className="mx-auto max-w-7xl px-4 pt-20 sm:px-6">
-          <h2 className="text-center text-[28px] font-bold text-ink-900 sm:text-[34px]">Dealers who trade on AutoBidX</h2>
+          <h2 className="text-center text-[28px] font-bold text-ink-900 sm:text-[34px]">Dealers who trade on Alpha Cars</h2>
           <div className="mt-10 grid gap-4 md:grid-cols-2 lg:grid-cols-4">
             {testimonials.map((t) => (
               <figure key={t.id} className="flex flex-col rounded-2xl border border-slate-200 bg-white p-6 shadow-[var(--shadow-card)]">
@@ -346,7 +346,7 @@ export default async function HomePage() {
       {/* ───────── DEALER CTA ───────── */}
       <section className="mx-auto max-w-7xl px-4 py-20 sm:px-6">
         <div className="relative overflow-hidden rounded-3xl bg-ink-900 px-6 py-12 text-white sm:px-12">
-          <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_60%_80%_at_90%_10%,rgba(242,85,29,0.35),transparent_60%)]" />
+          <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_60%_80%_at_90%_10%,rgba(224,27,36,0.35),transparent_60%)]" />
           <div className="relative grid items-center gap-8 lg:grid-cols-[1.4fr_1fr]">
             <div>
               <Trophy className="h-9 w-9 text-ignite-400" />

@@ -1,5 +1,4 @@
 import Link from "next/link";
-import { Logo } from "./logo";
 import { getSettings } from "@/server/settings";
 
 export async function SiteFooter() {
@@ -14,7 +13,8 @@ export async function SiteFooter() {
       <div className="mx-auto max-w-7xl px-4 py-14 sm:px-6">
         <div className="grid gap-10 md:grid-cols-[1.4fr_repeat(3,1fr)]">
           <div>
-            <Logo dark />
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/brand/alpha-cars-logo.png" alt="Alpha Cars — Pre Owned Cars" width={752} height={596} className="h-28 w-auto mix-blend-lighten" />
             <p className="mt-4 max-w-xs font-display text-[17px] italic text-slate-300">Buy Smarter. Sell Faster.</p>
             <p className="mt-3 max-w-xs text-[13px] leading-relaxed">India&apos;s dealer-to-dealer used-car marketplace with transparent, server-verified bidding. Built in Kerala.</p>
             <div className="mt-5 space-y-1 text-[13px]">
@@ -37,7 +37,7 @@ export async function SiteFooter() {
         </div>
         <div className="mt-12 flex flex-col justify-between gap-3 border-t border-white/10 pt-6 text-[12px] sm:flex-row">
           <span>© {new Date().getFullYear()} {s["gst.platformLegalName"]}. All rights reserved.</span>
-          <span>AutoBidX is a marketplace facilitator; vehicles are sold by independent verified dealers.</span>
+          <span>Alpha Cars is a marketplace facilitator; vehicles are sold by independent verified dealers.</span>
         </div>
       </div>
     </footer>

@@ -33,7 +33,7 @@ export async function generateMetadata({ searchParams }: { searchParams: Promise
     if (p.data.fuel?.length === 1) parts.push(humanize(p.data.fuel[0]));
   }
   const title = parts.length ? `Used ${parts.join(" ")} cars for sale` : "Used cars for sale from verified dealers";
-  return { title, description: `${title} — bid in live auctions or buy now on AutoBidX.`, alternates: { canonical: "/vehicles" } };
+  return { title, description: `${title} — bid in live auctions or buy now on Alpha Cars.`, alternates: { canonical: "/vehicles" } };
 }
 
 export default async function VehiclesPage({ searchParams }: { searchParams: Promise<SP> }) {

@@ -83,18 +83,18 @@ export function HeaderClient({ user, transparent = false }: { user: HeaderUser; 
   }
 
   const solid = !transparent || scrolled || menu;
-  const textCls = solid ? "text-ink-900" : "text-white";
+  const textCls = "text-white";
   return (
-    <header className={cn("sticky top-0 z-50 transition-colors", solid ? "border-b border-slate-200/80 bg-white/95 backdrop-blur" : "bg-transparent")}>
+    <header className={cn("sticky top-0 z-50 transition-colors", solid ? "border-b border-white/10 bg-black" : "bg-transparent")}>
       <div className="mx-auto flex h-16 max-w-7xl items-center gap-4 px-4 sm:px-6">
-        <Logo dark={!solid} />
+        <Logo dark />
         <nav className="ml-6 hidden items-center gap-1 lg:flex">
           {NAV.map((n) => (
-            <Link key={n.href} href={n.href} className={cn("rounded-lg px-3 py-2 text-[14px] font-semibold transition", textCls, pathname.startsWith(n.href) ? (solid ? "bg-slate-100" : "bg-white/15") : solid ? "hover:bg-slate-50" : "hover:bg-white/10")}>
+            <Link key={n.href} href={n.href} className={cn("rounded-lg px-3 py-2 text-[14px] font-semibold transition", textCls, pathname.startsWith(n.href) ? "bg-white/15" : "hover:bg-white/10")}>
               {n.label}
             </Link>
           ))}
-          <Link href={user ? "/dashboard/vehicles/new" : "/register"} className={cn("rounded-lg px-3 py-2 text-[14px] font-semibold", textCls, solid ? "hover:bg-slate-50" : "hover:bg-white/10")}>
+          <Link href={user ? "/dashboard/vehicles/new" : "/register"} className={cn("rounded-lg px-3 py-2 text-[14px] font-semibold", textCls, "hover:bg-white/10")}>
             Sell Your Car
           </Link>
         </nav>
@@ -105,7 +105,7 @@ export function HeaderClient({ user, transparent = false }: { user: HeaderUser; 
           {user ? (
             <>
               <div className="relative" ref={bellRef}>
-                <button onClick={openBell} className={cn("relative flex h-10 w-10 items-center justify-center rounded-lg", textCls, solid ? "hover:bg-slate-100" : "hover:bg-white/10")} aria-label={`Notifications${unread ? ` (${unread} unread)` : ""}`}>
+                <button onClick={openBell} className={cn("relative flex h-10 w-10 items-center justify-center rounded-lg", textCls, "hover:bg-white/10")} aria-label={`Notifications${unread ? ` (${unread} unread)` : ""}`}>
                   <Bell className="h-5 w-5" />
                   {unread > 0 && <span className="num absolute right-1.5 top-1.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-ignite-500 px-1 text-[10px] font-bold text-white">{unread > 9 ? "9+" : unread}</span>}
                 </button>
@@ -139,7 +139,7 @@ export function HeaderClient({ user, transparent = false }: { user: HeaderUser; 
                 )}
               </div>
               <div className="relative hidden sm:block" ref={acctRef}>
-                <button onClick={() => setAcct((a) => !a)} className={cn("flex h-10 items-center gap-2 rounded-lg pl-1.5 pr-2", textCls, solid ? "hover:bg-slate-100" : "hover:bg-white/10")}>
+                <button onClick={() => setAcct((a) => !a)} className={cn("flex h-10 items-center gap-2 rounded-lg pl-1.5 pr-2", textCls, "hover:bg-white/10")}>
                   <span className="flex h-7 w-7 items-center justify-center rounded-full bg-ignite-500 text-[12px] font-bold text-white">{user.name.charAt(0)}</span>
                   <span className="max-w-32 truncate text-[13.5px] font-semibold">{user.dealerName ?? user.name}</span>
                   <ChevronDown className="h-4 w-4 opacity-60" />
@@ -159,7 +159,7 @@ export function HeaderClient({ user, transparent = false }: { user: HeaderUser; 
             </>
           ) : (
             <>
-              <Link href="/login" className={cn("hidden h-10 items-center rounded-lg px-3 text-[14px] font-semibold sm:flex", textCls, solid ? "hover:bg-slate-100" : "hover:bg-white/10")}>Sign in</Link>
+              <Link href="/login" className={cn("hidden h-10 items-center rounded-lg px-3 text-[14px] font-semibold sm:flex", textCls, "hover:bg-white/10")}>Sign in</Link>
               <Link href="/register" className="hidden h-10 items-center rounded-lg bg-ignite-500 px-4 text-[14px] font-bold text-white hover:bg-ignite-600 sm:flex">Join as Dealer</Link>
             </>
           )}

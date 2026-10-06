@@ -28,7 +28,7 @@ export async function generateMetadata({ params }: { params: Promise<P> }): Prom
   const v = await getVehicleByCode(code);
   if (!v) return { title: "Vehicle not found" };
   const price = v.currentBid ?? v.buyNowPrice ?? v.expectedPrice;
-  const desc = `${v.title} · ${formatNumber(v.kmDriven)} km · ${humanize(v.fuel)} · ${humanize(v.transmission)} · ${v.cityName ?? v.district.name}. ${v.status === "AUCTION_LIVE" ? `Live auction, current bid ${formatINR(price)}.` : `Price ${formatINR(price)}.`} Sold by ${v.dealer.name}, a verified dealer on AutoBidX.`;
+  const desc = `${v.title} · ${formatNumber(v.kmDriven)} km · ${humanize(v.fuel)} · ${humanize(v.transmission)} · ${v.cityName ?? v.district.name}. ${v.status === "AUCTION_LIVE" ? `Live auction, current bid ${formatINR(price)}.` : `Price ${formatINR(price)}.`} Sold by ${v.dealer.name}, a verified dealer on Alpha Cars.`;
   const img = v.images[0]?.url;
   return {
     title: `${v.title} for sale in ${v.cityName ?? v.district.name}`,

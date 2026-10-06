@@ -37,10 +37,10 @@ npm run dev                     # http://localhost:3000
 
 | Role | Email | Password |
 |---|---|---|
-| Super Admin | `admin@autobidx.in` | `Admin@123` |
-| Admin (operations) | `ops@autobidx.in` | `Admin@123` |
-| Dealer — seller (Malabar Motors, Kochi) | `seller@autobidx.in` | `Demo@1234` |
-| Dealer — buyer (Pooram Auto Hub, Thrissur) | `buyer@autobidx.in` | `Demo@1234` |
+| Super Admin | `admin@alphacars.in` | `Admin@123` |
+| Admin (operations) | `ops@alphacars.in` | `Admin@123` |
+| Dealer — seller (Malabar Motors, Kochi) | `seller@alphacars.in` | `Demo@1234` |
+| Dealer — buyer (Pooram Auto Hub, Thrissur) | `buyer@alphacars.in` | `Demo@1234` |
 
 Payments use a **sandbox gateway** in development: checkout redirects to `/pay/mock/…`, which plays the
 provider's role and delivers an HMAC-signed webhook to the real webhook endpoint. It is disabled in production.

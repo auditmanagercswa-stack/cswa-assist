@@ -77,7 +77,7 @@ export function RegisterWizard(props: {
 
   return (
     <div className="w-full max-w-2xl">
-      <h1 className="text-[28px] font-bold text-ink-900 sm:text-[32px]">Join AutoBidX as a dealer</h1>
+      <h1 className="text-[28px] font-bold text-ink-900 sm:text-[32px]">Join Alpha Cars as a dealer</h1>
       <p className="mt-1 text-sm text-slate-500">Register in minutes. Verified dealers can list, bid and buy across India.</p>
       <ol className="mt-6 grid grid-cols-4 gap-2" aria-label="Registration progress">
         {STEPS.map((s, i) => {

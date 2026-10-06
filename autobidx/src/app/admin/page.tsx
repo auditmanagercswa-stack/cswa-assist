@@ -18,7 +18,7 @@ export default async function AdminHome() {
   ]);
   return (
     <div>
-      <PageHeader eyebrow="Operations" title="Marketplace overview" subtitle="Live state of AutoBidX" />
+      <PageHeader eyebrow="Operations" title="Marketplace overview" subtitle="Live state of Alpha Cars" />
       <div className="grid grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-4">
         <DashboardCard label="Total dealers" value={formatNumber(s.dealers)} icon={<Users className="h-4 w-4" />} href="/admin/dealers" />
         <DashboardCard label="Verified dealers" value={formatNumber(s.verified)} icon={<BadgeCheck className="h-4 w-4" />} tone="green" href="/admin/dealers?status=VERIFIED" />

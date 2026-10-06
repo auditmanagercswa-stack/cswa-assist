@@ -4,7 +4,7 @@ import { getCurrentActor } from "@/server/auth/session";
 import { SiteHeader } from "@/components/layout/site-header";
 import { SideNav, type NavGroup, type NavItem } from "@/components/dashboard/sidebar";
 
-export const metadata = { title: { default: "Admin", template: "%s · Admin · AutoBidX" }, robots: { index: false } };
+export const metadata = { title: { default: "Admin", template: "%s · Admin · Alpha Cars" }, robots: { index: false } };
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
   const actor = await getCurrentActor();

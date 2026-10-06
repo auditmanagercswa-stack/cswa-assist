@@ -104,7 +104,7 @@ export async function createOrderTx(tx: Tx, input: CreateOrderInput) {
   const buyerLines = fees.lines.filter((l) => l.payer === "BUYER");
   await tx.invoice.create({
     data: {
-      number: invoiceNumber("ABX-B"),
+      number: invoiceNumber("ALC-B"),
       type: "BUYER_TAX_INVOICE",
       orderId: order.id,
       dealerId: input.buyerDealerId,
@@ -119,7 +119,7 @@ export async function createOrderTx(tx: Tx, input: CreateOrderInput) {
   const sellerLines = fees.lines.filter((l) => l.payer === "SELLER");
   await tx.invoice.create({
     data: {
-      number: invoiceNumber("ABX-S"),
+      number: invoiceNumber("ALC-S"),
       type: "SELLER_FEE_INVOICE",
       orderId: order.id,
       dealerId: input.vehicle.dealerId,

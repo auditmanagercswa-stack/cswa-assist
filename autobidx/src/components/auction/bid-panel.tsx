@@ -355,7 +355,7 @@ export function BidPanel({
             </div>
             <div className="mt-4 text-[13px] font-semibold text-slate-700">If you win at this price, you&apos;ll pay:</div>
             {quote ? <FeeBreakdown b={quote} className="mt-1" priceLabel="Winning bid" /> : <div className="py-6 text-center text-sm text-slate-400">Calculating fees…</div>}
-            <p className="mt-3 flex items-start gap-1.5 text-[12px] text-slate-500"><BadgeCheck className="mt-0.5 h-3.5 w-3.5 shrink-0" />Fees are calculated by AutoBidX servers from current fee rules. A winning bid is a binding commitment to buy.</p>
+            <p className="mt-3 flex items-start gap-1.5 text-[12px] text-slate-500"><BadgeCheck className="mt-0.5 h-3.5 w-3.5 shrink-0" />Fees are calculated by Alpha Cars servers from current fee rules. A winning bid is a binding commitment to buy.</p>
           </div>
         )}
       </Modal>

@@ -6,7 +6,7 @@ import { DealerCard } from "@/components/vehicles/dealer-card";
 import { EmptyState } from "@/components/ui/empty";
 import { Pagination } from "@/components/ui/pagination";
 
-export const metadata: Metadata = { title: "Verified used-car dealers", description: "KYC-verified used-car dealerships on AutoBidX across Kerala and India.", alternates: { canonical: "/dealers" } };
+export const metadata: Metadata = { title: "Verified used-car dealers", description: "KYC-verified used-car dealerships on Alpha Cars across Kerala and India.", alternates: { canonical: "/dealers" } };
 
 export default async function DealersPage({ searchParams }: { searchParams: Promise<{ q?: string; state?: string; page?: string }> }) {
   const sp = await searchParams;

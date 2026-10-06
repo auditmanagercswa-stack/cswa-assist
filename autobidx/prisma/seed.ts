@@ -1,6 +1,6 @@
 /* eslint-disable no-console */
 /**
- * AutoBidX demo seed — realistic Indian marketplace data.
+ * Alpha Cars demo seed — realistic Indian marketplace data.
  * Re-runnable: wipes all tables first. Run: npm run db:seed
  */
 import { promises as fs } from "fs";
@@ -194,8 +194,8 @@ async function main() {
   console.log("Users & dealers…");
   const adminPw = await hashPassword("Admin@123");
   const demoPw = await hashPassword("Demo@1234");
-  const superAdmin = await prisma.user.create({ data: { name: "Anjali Krishnan", email: "admin@autobidx.in", phone: "9000000001", passwordHash: adminPw, roleId: roles.SUPER_ADMIN, emailVerifiedAt: ago(200 * D), phoneVerifiedAt: ago(200 * D) } });
-  const opsAdmin = await prisma.user.create({ data: { name: "Rahul Menon", email: "ops@autobidx.in", phone: "9000000002", passwordHash: adminPw, roleId: roles.ADMIN, emailVerifiedAt: ago(150 * D), phoneVerifiedAt: ago(150 * D) } });
+  const superAdmin = await prisma.user.create({ data: { name: "Anjali Krishnan", email: "admin@alphacars.in", phone: "9000000001", passwordHash: adminPw, roleId: roles.SUPER_ADMIN, emailVerifiedAt: ago(200 * D), phoneVerifiedAt: ago(200 * D) } });
+  const opsAdmin = await prisma.user.create({ data: { name: "Rahul Menon", email: "ops@alphacars.in", phone: "9000000002", passwordHash: adminPw, roleId: roles.ADMIN, emailVerifiedAt: ago(150 * D), phoneVerifiedAt: ago(150 * D) } });
 
   type SeedDealer = { id: string; name: string; ownerId: string; districtId: string; stateId: string; cityName: string; pincode: string; status: string; planId: string; gstin: string };
   const dealers: SeedDealer[] = [];
@@ -209,7 +209,7 @@ async function main() {
     const owner = await prisma.user.create({
       data: {
         name: isSeller ? "Joseph Kurian" : isBuyer ? "Lakshmi Nair" : `${pick(FIRST_NAMES)} ${pick(LAST_NAMES)}`,
-        email: isSeller ? "seller@autobidx.in" : isBuyer ? "buyer@autobidx.in" : `dealer${i + 1}@autobidx.in`,
+        email: isSeller ? "seller@alphacars.in" : isBuyer ? "buyer@alphacars.in" : `dealer${i + 1}@alphacars.in`,
         phone: `98${String(47000000 + i * 1371).padStart(8, "0")}`,
         passwordHash: demoPw,
         roleId: roles.DEALER,
@@ -285,7 +285,7 @@ async function main() {
     dealers.push({ id: dealer.id, name, ownerId: owner.id, districtId: dist.id, stateId: dist.stateId, cityName: city.name, pincode: city.pincode ?? "682001", status, planId, gstin });
   }
   // A second team member for the demo seller
-  const staff = await prisma.user.create({ data: { name: "Vinod Pillai", email: "staff@autobidx.in", phone: "9847099999", passwordHash: demoPw, roleId: roles.DEALER, emailVerifiedAt: ago(40 * D) } });
+  const staff = await prisma.user.create({ data: { name: "Vinod Pillai", email: "staff@alphacars.in", phone: "9847099999", passwordHash: demoPw, roleId: roles.DEALER, emailVerifiedAt: ago(40 * D) } });
   await prisma.dealerUser.create({ data: { dealerId: dealers[0].id, userId: staff.id, role: "STAFF", canBid: false, canList: true } });
 
   const verified = dealers.filter((d) => d.status === "VERIFIED");
@@ -415,7 +415,7 @@ async function main() {
     const items = INSPECTION_CHECKLIST.map((c) => ({ key: c.key, label: c.label, rating: c.key === "accident" || c.key === "flood" ? between(8, 10) : between(6, 10), notes: c.key === "tyres" && rand() < 0.4 ? "Rear tyres ~40% tread" : undefined }));
     const score = inspectionScore(items);
     await prisma.vehicleInspection.create({
-      data: { vehicleId: v.id, status: "COMPLETED", inspectorName: pick(["AutoBidX Assured — Kochi", "AutoBidX Assured — Thrissur", "CarCheck Partners", "AutoBidX Assured — Kozhikode"]), inspectedAt: new Date(v.createdAt.getTime() + D), score, checklist: items, summary: score >= 85 ? "Very well maintained vehicle. No structural issues found; minor cosmetic wear consistent with age." : "Mechanically sound. Some cosmetic marks and wear items due for replacement at next service.", odometerVerified: true },
+      data: { vehicleId: v.id, status: "COMPLETED", inspectorName: pick(["Alpha Cars Assured — Kochi", "Alpha Cars Assured — Thrissur", "CarCheck Partners", "Alpha Cars Assured — Kozhikode"]), inspectedAt: new Date(v.createdAt.getTime() + D), score, checklist: items, summary: score >= 85 ? "Very well maintained vehicle. No structural issues found; minor cosmetic wear consistent with age." : "Mechanically sound. Some cosmetic marks and wear items due for replacement at next service.", odometerVerified: true },
     });
     await prisma.vehicle.update({ where: { id: v.id }, data: { inspectionScore: score, inspectionVerified: true } });
   }
@@ -517,7 +517,7 @@ async function main() {
     const sellerD = dealers.find((d) => d.id === v.dealerId)!;
     const order = await prisma.order.create({
       data: {
-        orderNumber: `ABX-${String(createdAt.getFullYear()).slice(2)}${String(createdAt.getMonth() + 1).padStart(2, "0")}-${code().toUpperCase()}`,
+        orderNumber: `ALC-${String(createdAt.getFullYear()).slice(2)}${String(createdAt.getMonth() + 1).padStart(2, "0")}-${code().toUpperCase()}`,
         source,
         vehicleId: v.id,
         auctionId,
@@ -548,8 +548,8 @@ async function main() {
         documents: { create: docs },
         invoices: {
           create: [
-            { number: `ABX-B/${String(++invSeq)}`, type: "BUYER_TAX_INVOICE", dealerId: buyer.id, billToName: buyer.name, billToGstin: buyer.gstin, lines: fb.lines.filter((l) => l.payer === "BUYER").map((l) => ({ description: l.name, amount: l.amount, gst: l.gst })), subtotal: fb.buyer.fees, gst: fb.buyer.gst, total: fb.buyer.fees + fb.buyer.gst, issuedAt: createdAt },
-            { number: `ABX-S/${String(++invSeq)}`, type: "SELLER_FEE_INVOICE", dealerId: v.dealerId, billToName: sellerD.name, billToGstin: sellerD.gstin, lines: fb.lines.filter((l) => l.payer === "SELLER").map((l) => ({ description: l.name, amount: l.amount, gst: l.gst })), subtotal: fb.seller.fees, gst: fb.seller.gst, total: fb.seller.fees + fb.seller.gst, issuedAt: createdAt },
+            { number: `ALC-B/${String(++invSeq)}`, type: "BUYER_TAX_INVOICE", dealerId: buyer.id, billToName: buyer.name, billToGstin: buyer.gstin, lines: fb.lines.filter((l) => l.payer === "BUYER").map((l) => ({ description: l.name, amount: l.amount, gst: l.gst })), subtotal: fb.buyer.fees, gst: fb.buyer.gst, total: fb.buyer.fees + fb.buyer.gst, issuedAt: createdAt },
+            { number: `ALC-S/${String(++invSeq)}`, type: "SELLER_FEE_INVOICE", dealerId: v.dealerId, billToName: sellerD.name, billToGstin: sellerD.gstin, lines: fb.lines.filter((l) => l.payer === "SELLER").map((l) => ({ description: l.name, amount: l.amount, gst: l.gst })), subtotal: fb.seller.fees, gst: fb.seller.gst, total: fb.seller.fees + fb.seller.gst, issuedAt: createdAt },
           ],
         },
       },
@@ -677,14 +677,14 @@ async function main() {
   const pendingV = vehicles.find((v) => v.plan.kind === "pending" && v.dealerId === demoSeller.id);
   if (pendingV) await prisma.payment.create({ data: { reference: ref("PAY"), purpose: "LISTING_FEE", userId: demoSeller.ownerId, dealerId: demoSeller.id, amount: 589, gateway: "pending", targetId: pendingV.id, status: "PENDING" } });
   const subPay = await prisma.payment.create({ data: { reference: ref("PAY"), purpose: "SUBSCRIPTION", userId: demoSeller.ownerId, dealerId: demoSeller.id, amount: 3539, method: "UPI", gateway: "mock", gatewayOrderId: "mock_order_sub1", gatewayPaymentId: "mock_pay_sub1", status: "PAID", targetId: pro.id, verifiedAt: ago(12 * D), createdAt: ago(12 * D) } });
-  await prisma.invoice.create({ data: { number: `ABX-SV/${++invSeq}`, type: "SERVICE_INVOICE", paymentId: subPay.id, dealerId: demoSeller.id, billToName: demoSeller.name, billToGstin: demoSeller.gstin, lines: [{ description: "Pro subscription (30 days)", amount: 2999, gst: 540 }], subtotal: 2999, gst: 540, total: 3539, issuedAt: ago(12 * D) } });
+  await prisma.invoice.create({ data: { number: `ALC-SV/${++invSeq}`, type: "SERVICE_INVOICE", paymentId: subPay.id, dealerId: demoSeller.id, billToName: demoSeller.name, billToGstin: demoSeller.gstin, lines: [{ description: "Pro subscription (30 days)", amount: 2999, gst: 540 }], subtotal: 2999, gst: 540, total: 3539, issuedAt: ago(12 * D) } });
 
   // Notifications for demo users
   const notes: [string, string, string, string, string][] = [
     [demoBuyer.ownerId, "OUTBID", "You've been outbid", "A higher bid was placed on a vehicle you're bidding on.", "/dashboard/bids"],
     [demoBuyer.ownerId, "AUCTION_WON", "Congratulations — you won!", "Complete payment within 48 hours to secure your vehicle.", "/dashboard/orders"],
     [demoBuyer.ownerId, "COUNTER_OFFER", "Counter-offer received", "A seller countered your offer.", "/dashboard/offers"],
-    [demoBuyer.ownerId, "KYC_APPROVED", "Your dealership is verified 🎉", "You can now bid, buy and sell on AutoBidX.", "/dashboard"],
+    [demoBuyer.ownerId, "KYC_APPROVED", "Your dealership is verified 🎉", "You can now bid, buy and sell on Alpha Cars.", "/dashboard"],
     [demoSeller.ownerId, "OFFER_RECEIVED", "New offer received", "Pooram Auto Hub made an offer on one of your vehicles.", "/dashboard/offers"],
     [demoSeller.ownerId, "NEW_BID", "New bid on your vehicle", "Your live auction received a new bid.", "/dashboard/auctions"],
     [demoSeller.ownerId, "PAYMENT_RECEIVED", "Payment received", "A buyer's payment was verified — confirm the sale to proceed.", "/dashboard/orders"],
@@ -752,10 +752,10 @@ async function main() {
   };
   console.log("Seed complete in", Math.round((Date.now() - t0) / 1000), "s:", counts, "(bids created:", totalBids, ")");
   console.log("\nDemo logins (development/demo mode only):");
-  console.log("  Super admin  admin@autobidx.in  / Admin@123");
-  console.log("  Admin        ops@autobidx.in    / Admin@123");
-  console.log("  Seller       seller@autobidx.in / Demo@1234");
-  console.log("  Buyer        buyer@autobidx.in  / Demo@1234");
+  console.log("  Super admin  admin@alphacars.in  / Admin@123");
+  console.log("  Admin        ops@alphacars.in    / Admin@123");
+  console.log("  Seller       seller@alphacars.in / Demo@1234");
+  console.log("  Buyer        buyer@alphacars.in  / Demo@1234");
 }
 
 main()

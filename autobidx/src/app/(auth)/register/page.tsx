@@ -5,7 +5,7 @@ import { getStates } from "@/server/services/catalog";
 import { getSettings } from "@/server/settings";
 import { RegisterWizard } from "./wizard";
 
-export const metadata: Metadata = { title: "Join as a dealer", description: "Register your used-car dealership on AutoBidX to buy and sell through verified auctions." };
+export const metadata: Metadata = { title: "Join as a dealer", description: "Register your used-car dealership on Alpha Cars to buy and sell through verified auctions." };
 
 export default async function RegisterPage({ searchParams }: { searchParams: Promise<{ step?: string; type?: string }> }) {
   const sp = await searchParams;

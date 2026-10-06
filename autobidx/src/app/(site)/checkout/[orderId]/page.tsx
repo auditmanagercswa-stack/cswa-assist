@@ -58,10 +58,10 @@ export default async function CheckoutPage({ params }: { params: Promise<{ order
           <Card>
             <h2 className="mb-2 font-sans text-[16px] font-bold text-ink-900">Payment breakdown</h2>
             <FeeBreakdown b={fb} priceLabel={order.source === "AUCTION" ? "Winning bid" : "Vehicle price"} />
-            <p className="mt-3 text-[12px] text-slate-500">Fees were calculated by AutoBidX when the order was created and are locked for this order. GST invoice available after creation in your order documents.</p>
+            <p className="mt-3 text-[12px] text-slate-500">Fees were calculated by Alpha Cars when the order was created and are locked for this order. GST invoice available after creation in your order documents.</p>
           </Card>
           <div className="grid gap-3 text-[13px] text-slate-600 sm:grid-cols-3">
-            <div className="flex items-start gap-2"><Lock className="mt-0.5 h-4 w-4 text-verified-500" />Payment held by AutoBidX until delivery is confirmed</div>
+            <div className="flex items-start gap-2"><Lock className="mt-0.5 h-4 w-4 text-verified-500" />Payment held by Alpha Cars until delivery is confirmed</div>
             <div className="flex items-start gap-2"><ShieldCheck className="mt-0.5 h-4 w-4 text-verified-500" />Dispute protection before handover</div>
             <div className="flex items-start gap-2"><CheckCircle2 className="mt-0.5 h-4 w-4 text-verified-500" />Invoice, agreement & receipt generated automatically</div>
           </div>
