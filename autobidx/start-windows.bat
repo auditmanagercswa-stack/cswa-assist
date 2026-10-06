@@ -92,7 +92,7 @@ rem --- 7. Start the portal and open the browser ----------------------
 echo.
 echo  ==================================================
 echo    Portal starting at  http://localhost:3000
-echo    Your browser opens in about 20 seconds.
+echo    Your browser opens by itself as soon as the portal is ready.
 echo    KEEP THIS WINDOW OPEN. Closing it stops the portal.
 echo.
 echo    Demo sign-ins
@@ -101,7 +101,7 @@ echo      Seller      : seller@alphacars.in / Demo@1234
 echo      Buyer       : buyer@alphacars.in  / Demo@1234
 echo  ==================================================
 echo.
-start "" cmd /c "timeout /t 20 /nobreak >nul & start http://localhost:3000"
+start "" /min powershell -NoProfile -Command "for($i=0;$i -lt 300;$i++){try{Invoke-WebRequest http://localhost:3000/api/health -UseBasicParsing -TimeoutSec 90 | Out-Null; break}catch{if($_.Exception.Response){break}; Start-Sleep 2}}; Start-Process http://localhost:3000"
 call npm run dev
 goto :eof
 
