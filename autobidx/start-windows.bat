@@ -9,100 +9,37 @@ echo    ALPHA CARS  -  starting your local portal
 echo  ==================================================
 echo.
 
-rem --- 1. Check the required programs -------------------------------
+rem --- 1. Node.js -----------------------------------------------------
 where node >nul 2>nul
 if errorlevel 1 (
-  echo  [X] Node.js is not installed.
-  echo      Install the LTS version from https://nodejs.org and run this file again.
+  echo  [..] Node.js is not installed. Trying to install it now...
+  where winget >nul 2>nul
+  if errorlevel 1 (
+    echo  [X] Please install Node.js LTS from https://nodejs.org
+    echo      then double-click start-windows.bat again.
+    goto :fail
+  )
+  winget install -e --id OpenJS.NodeJS.LTS --accept-source-agreements --accept-package-agreements
+  echo.
+  echo  [OK] Node.js installed. CLOSE this window and double-click start-windows.bat again.
   goto :fail
 )
-where docker >nul 2>nul
-if errorlevel 1 (
-  echo  [X] Docker Desktop is not installed.
-  echo      Install it from https://www.docker.com/products/docker-desktop/ and run this file again.
-  goto :fail
-)
-docker info >nul 2>nul
-if errorlevel 1 (
-  echo  [X] Docker Desktop is installed but not running.
-  echo      Open Docker Desktop, wait until it says "Engine running", then run this file again.
-  goto :fail
-)
-echo  [OK] Node.js and Docker found.
+echo  [OK] Node.js found.
 
-rem --- 2. Start the database -----------------------------------------
-echo  [..] Starting the database...
-docker compose up -d
-if errorlevel 1 (
-  echo  [X] The database could not start. If another program uses port 5432, close it and try again.
-  goto :fail
-)
-set /a tries=0
-:waitdb
-docker compose exec -T postgres pg_isready -U postgres >nul 2>nul
-if not errorlevel 1 goto :dbready
-set /a tries+=1
-if %tries% geq 60 (
-  echo  [X] The database did not become ready in time. Run this file again.
-  goto :fail
-)
-timeout /t 2 /nobreak >nul
-goto :waitdb
-:dbready
-echo  [OK] Database is running.
-
-rem --- 3. Settings file ----------------------------------------------
-if not exist ".env" (
-  copy ".env.example" ".env" >nul
-  echo  [OK] Created settings file .env
-)
-
-rem --- 4. Install packages (first run only) --------------------------
-if not exist "node_modules" (
+rem --- 2. Packages (first run, or after an update) --------------------
+if not exist "node_modules\embedded-postgres" (
   echo  [..] Installing packages. The first time takes a few minutes...
   call npm install
   if errorlevel 1 (
-    echo  [X] Package installation failed. Check your internet connection and run this file again.
+    echo  [X] Package installation failed. Check your internet connection and try again.
     goto :fail
   )
 )
 echo  [OK] Packages installed.
 
-rem --- 5. Database tables --------------------------------------------
-call npx prisma migrate deploy
-if errorlevel 1 (
-  echo  [X] Could not set up the database tables.
-  goto :fail
-)
-
-rem --- 6. Demo data (first run, or when you run: start-windows.bat reset) ---
-if /i "%~1"=="reset" del ".seeded" >nul 2>nul
-if not exist ".seeded" (
-  echo  [..] Loading demo dealers, cars and auctions. About 2 minutes...
-  call npm run db:seed
-  if errorlevel 1 (
-    echo  [X] Loading demo data failed.
-    goto :fail
-  )
-  echo seeded> ".seeded"
-)
-echo  [OK] Demo data ready.
-
-rem --- 7. Start the portal and open the browser ----------------------
-echo.
-echo  ==================================================
-echo    Portal starting at  http://localhost:3000
-echo    Your browser opens by itself as soon as the portal is ready.
-echo    KEEP THIS WINDOW OPEN. Closing it stops the portal.
-echo.
-echo    Demo sign-ins
-echo      Super Admin : admin@alphacars.in  / Admin@123
-echo      Seller      : seller@alphacars.in / Demo@1234
-echo      Buyer       : buyer@alphacars.in  / Demo@1234
-echo  ==================================================
-echo.
-start "" /min powershell -NoProfile -Command "for($i=0;$i -lt 300;$i++){try{Invoke-WebRequest http://localhost:3000/api/health -UseBasicParsing -TimeoutSec 90 | Out-Null; break}catch{if($_.Exception.Response){break}; Start-Sleep 2}}; Start-Process http://localhost:3000"
-call npm run dev
+rem --- 3. Database, demo data, portal ---------------------------------
+node scripts\local-start.mjs %*
+if errorlevel 1 goto :fail
 goto :eof
 
 :fail

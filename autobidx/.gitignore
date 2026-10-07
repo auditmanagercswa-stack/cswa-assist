@@ -7,4 +7,5 @@ next-env.d.ts
 coverage
 test-results
 storage-test
-.seeded
+.localdb
+.localdb-seeded

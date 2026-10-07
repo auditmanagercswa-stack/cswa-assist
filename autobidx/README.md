@@ -21,9 +21,10 @@ track handover — with a configurable fee/commission engine and a complete admi
 
 ## Quick start
 
-**Windows, one click:** install Node.js LTS and Docker Desktop, start Docker Desktop, then double-click
-`start-windows.bat` in this folder. It starts the database, installs packages, loads demo data on the
-first run and opens http://localhost:3000. Run `start-windows.bat reset` to reload fresh demo data.
+**One command, no Docker:** with Node.js 20+ installed, run `npm install` then `npm run local`
+(or double-click `start-windows.bat` on Windows, which also offers to install Node.js). It runs a bundled
+PostgreSQL on port 5433 (data in `.localdb/`), applies migrations, loads demo data on the first run and opens
+http://localhost:3000. Add `reset` (`npm run local -- reset`, `start-windows.bat reset`) to reload fresh demo data.
 
 **Any OS, manual steps:**
 
