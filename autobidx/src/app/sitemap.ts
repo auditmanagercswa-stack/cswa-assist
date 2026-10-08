@@ -3,12 +3,14 @@ import { prisma } from "@/lib/db";
 import { env } from "@/lib/env";
 import { vehiclePath } from "@/lib/slug";
 
-export const revalidate = 3600;
 
 /**
  * Sitemap of public pages + live listings. At 1M+ listings, split into a sitemap index with
  * generateSitemaps() (50k URLs per file) — the query below is already keyset-friendly.
  */
+// Built per request so the site can be built without a database connection.
+export const dynamic = "force-dynamic";
+
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const base = env.appUrl;
   const [vehicles, dealers, pages] = await Promise.all([

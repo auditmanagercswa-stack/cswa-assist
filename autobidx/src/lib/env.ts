@@ -7,7 +7,7 @@ function required(name: string, fallback?: string): string {
 
 export const env = {
   get appUrl() {
-    return (process.env.APP_URL || "http://localhost:3000").replace(/\/$/, "");
+    return (process.env.APP_URL || process.env.RENDER_EXTERNAL_URL || "http://localhost:3000").replace(/\/$/, "");
   },
   get appMode(): "development" | "demo" | "production" {
     const m = process.env.APP_MODE;

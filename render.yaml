@@ -1,0 +1,30 @@
+# Render Blueprint for the Alpha Cars demo portal (app lives in ./autobidx).
+# Deploy: Render dashboard → New → Blueprint → pick this repository and branch.
+services:
+  - type: web
+    name: alphacars
+    runtime: node
+    plan: free
+    rootDir: autobidx
+    buildCommand: npm ci --include=dev && npm run build
+    startCommand: node scripts/hosted-start.mjs
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_VERSION
+        value: "20"
+      - key: DATABASE_URL
+        fromDatabase:
+          name: alphacars-db
+          property: connectionString
+      - key: AUTH_SECRET
+        generateValue: true
+      - key: APP_MODE
+        value: demo
+      - key: PAYMENT_WEBHOOK_SECRET
+        generateValue: true
+
+databases:
+  - name: alphacars-db
+    plan: free
+    databaseName: autobidx
+    user: alphacars
