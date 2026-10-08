@@ -1,11 +1,11 @@
 node_modules
 .next
-storage
+/storage
 .env
 *.tsbuildinfo
 next-env.d.ts
 coverage
 test-results
-storage-test
+/storage-test
 .localdb
 .localdb-seeded
