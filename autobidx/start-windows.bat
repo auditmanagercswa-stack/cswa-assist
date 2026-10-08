@@ -31,7 +31,7 @@ if not exist "node_modules\embedded-postgres" (
   echo  [..] Installing packages. The first time takes a few minutes...
   call npm install
   if errorlevel 1 (
-    echo  [X] Package installation failed. Check your internet connection and try again.
+    echo  [X] Package installation failed. Scroll up to the first red "npm error" lines to see why.
     goto :fail
   )
 )
