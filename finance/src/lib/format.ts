@@ -7,7 +7,8 @@ const groupIN = new Intl.NumberFormat("en-IN", { maximumFractionDigits: 0 });
 const groupIN2 = new Intl.NumberFormat("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
 /** ₹1,30,000 — drops paise when the amount is whole rupees. */
-export function inr(paise: number, opts: { decimals?: boolean; sign?: boolean } = {}): string {
+export function inr(paise: number, opts: { decimals?: boolean; sign?: boolean; round?: boolean } = {}): string {
+  if (opts.round) paise = Math.round(paise / 100) * 100;
   const neg = paise < 0;
   const abs = Math.abs(paise);
   const rupees = abs / 100;

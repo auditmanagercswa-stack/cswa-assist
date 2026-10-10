@@ -111,9 +111,9 @@ async function main() {
     // Salaries on the last day, electricity mid-month (paid straight from bank)
     if (d28) await createAndPost(ctx, { type: "PAYMENT", date: d28, source: "SEED", narration: `Salaries for ${d28.toLocaleString("en-IN", { month: "long", timeZone: "UTC" })}`, lines: [{ ledgerId: await L("Salaries & Wages"), side: "DR", amountPaise: R(120000) }, { ledgerId: hdfc, side: "CR", amountPaise: R(120000) }] });
     const d15 = day(15);
-    if (d15) await createAndPost(ctx, { type: "PAYMENT", date: d15, source: "SEED", narration: "Electricity bill — MSEDCL", lines: [{ ledgerId: await L("Electricity"), side: "DR", amountPaise: R(between(3800, 6200)) }, { ledgerId: hdfc, side: "CR", amountPaise: 0 }].map((l, _i, a) => (l.amountPaise ? l : { ...l, amountPaise: a[0].amountPaise })) });
+    if (d15) { const amt = R(between(3800, 6200)); await createAndPost(ctx, { type: "PAYMENT", date: d15, source: "SEED", narration: "Electricity bill — MSEDCL", lines: [{ ledgerId: await L("Electricity"), side: "DR", amountPaise: amt }, { ledgerId: hdfc, side: "CR", amountPaise: amt }] }); }
     const d20 = day(20);
-    if (d20 && mi % 2 === 0) await createAndPost(ctx, { type: "PAYMENT", date: d20, source: "SEED", narration: "Petty cash — tea, courier, conveyance", lines: [{ ledgerId: await L("Office Expenses"), side: "DR", amountPaise: R(between(900, 2400)) }, { ledgerId: cash, side: "CR", amountPaise: 0 }].map((l, _i, a) => (l.amountPaise ? l : { ...l, amountPaise: a[0].amountPaise })) });
+    if (d20 && mi % 2 === 0) { const amt = R(between(900, 2400)); await createAndPost(ctx, { type: "PAYMENT", date: d20, source: "SEED", narration: "Petty cash — tea, courier, conveyance", lines: [{ ledgerId: await L("Office Expenses"), side: "DR", amountPaise: amt }, { ledgerId: cash, side: "CR", amountPaise: amt }] }); }
   }
 
   // Customer receipts: settle invoices due more than ~10 days ago, leaving a realistic ageing spread.
@@ -126,7 +126,7 @@ async function main() {
 
   // Monthly TDS deposit (7th) and GST settlement (20th) for completed months.
   const tdsLedger = await L("TDS Payable");
-  const heads = Object.fromEntries(await Promise.all(["CGST_OUT", "SGST_OUT", "IGST_OUT", "CGST_IN", "SGST_IN", "IGST_IN"].map(async (h) => [h, (await db.ledger.findFirstOrThrow({ where: { companyId: company.id, taxHead: h } })).id])));
+  const heads: Record<string, string> = Object.fromEntries(await Promise.all(["CGST_OUT", "SGST_OUT", "IGST_OUT", "CGST_IN", "SGST_IN", "IGST_IN"].map(async (h) => [h, (await db.ledger.findFirstOrThrow({ where: { companyId: company.id, taxHead: h } })).id])));
   for (let mi = 0; mi < 6; mi++) {
     const y = FY, m = 3 + mi;
     const from = utc(y, m, 1), to = utc(y, m + 1, 0);
@@ -140,7 +140,7 @@ async function main() {
       const sums: Record<string, number> = {};
       for (const [h, id] of Object.entries(heads)) {
         const a = await db.voucherLine.groupBy({ by: ["side"], _sum: { amountPaise: true }, where: { ledgerId: id, voucher: { companyId: company.id, type: { in: ["SALES", "PURCHASE"] }, date: { gte: from, lte: to } } } });
-        sums[h] = a.reduce((t, x) => t + (x.side === "DR" ? 1 : -1) * Number(x._sum.amountPaise ?? 0), 0);
+        sums[h] = a.reduce((t, x) => t + (x.side === "DR" ? 1 : -1) * Number(x._sum?.amountPaise ?? 0), 0);
       }
       const out = -(sums.CGST_OUT + sums.SGST_OUT + sums.IGST_OUT), inp = sums.CGST_IN + sums.SGST_IN + sums.IGST_IN;
       if (out > inp) {
@@ -178,6 +178,9 @@ async function main() {
   const second = await createCompanyWithChart(db, owner.id, { name: "SHREE GANESH ENTERPRISES", legalType: "PROPRIETORSHIP", stateCode: "27", gstin: gstin("27", "ABCPG1234H"), pan: "ABCPG1234H" }, "SBI Current A/c");
   await ensureDueDates(db, second.id, FY);
   await db.dueDate.updateMany({ where: { companyId: second.id, dueOn: { lt: today } }, data: { status: "FILED", filedAt: today } });
+
+  // Seeded history is not "recent activity" — keep the Home feed for things typed today.
+  await db.voucher.updateMany({ where: { companyId: company.id, source: "MANUAL" }, data: { source: "SEED" } });
 
   const counts = await Promise.all([db.voucher.count(), db.invoice.count(), db.bill.count(), db.bankTxn.count()]);
   console.log(`Seeded AUDIT TEST TRADERS: ${counts[0]} vouchers, ${counts[1]} invoices, ${counts[2]} bills, ${counts[3]} bank lines. Sign in as owner@demo.in`);

@@ -1,6 +1,8 @@
 "use client";
 import { useState, useTransition } from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { NAV, activeHref } from "./nav";
 import { RefreshCw, CalendarRange } from "lucide-react";
 import { Select, Input, Label } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -10,7 +12,6 @@ import { fyMonths } from "@/lib/fy";
 
 export interface TopBarProps {
   companyName: string;
-  section: string;
   companies: { id: string; name: string }[];
   companyId: string;
   fy: number;
@@ -22,6 +23,8 @@ export interface TopBarProps {
 /** Breadcrumb on the left; company, FY and period selectors plus Tally sync on the right. */
 export function TopBar(p: TopBarProps) {
   const [pending, start] = useTransition();
+  const path = usePathname();
+  const section = path.startsWith("/firm") ? "All clients" : NAV.find((x) => x.href === activeHref(path))?.label ?? "Home";
   const [custom, setCustom] = useState(false);
   const months = fyMonths(p.fy);
   const periodValue = p.periodKey.startsWith("c-") ? "custom" : p.periodKey;
@@ -31,7 +34,7 @@ export function TopBar(p: TopBarProps) {
       <nav aria-label="Breadcrumb" className="smallcaps flex min-w-0 items-center gap-2 text-ink-3">
         <span className="truncate font-semibold text-ink">{p.companyName}</span>
         <span aria-hidden>/</span>
-        <span className="truncate">{p.section}</span>
+        <span className="truncate">{section}</span>
       </nav>
       <div className={"flex flex-wrap items-center gap-2 " + (pending ? "opacity-60" : "")}>
         {p.companies.length > 1 && (

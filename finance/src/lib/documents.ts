@@ -63,7 +63,7 @@ export function computeInvoice(supplierState: string, posState: string, items: I
   const inter = isInterState(supplierState, posState);
   const lines = items.map((it) => {
     const taxable = Math.round(it.qty * it.ratePaise);
-    return { ...it, taxable, ...gstSplit(taxable, it.gstRate, inter) };
+    return { ...it, ...gstSplit(taxable, it.gstRate, inter) };
   });
   const taxable = lines.reduce((t, l) => t + l.taxable, 0);
   const cgst = lines.reduce((t, l) => t + l.cgst, 0), sgst = lines.reduce((t, l) => t + l.sgst, 0), igst = lines.reduce((t, l) => t + l.igst, 0);
