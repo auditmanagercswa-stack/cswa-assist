@@ -1,0 +1,747 @@
+<title>CSWA Books</title>
+<meta name="description" content="Shared cash and bank book for CSWA clients: receipts, payments, GST and running balance.">
+<style>
+/* Layout: a ledger sheet. Book switcher + summary strip on top, entry form beside the
+   Dr/Cr register on wide screens, stacked on phones. Amounts set in tabular figures. */
+:root {
+  --paper: #eef2f1;      /* page ground, faint ledger green-grey */
+  --sheet: #ffffff;      /* cards / register */
+  --sheet-2: #f6f8f8;    /* zebra + inputs */
+  --ink: #17252c;
+  --muted: #5a6971;
+  --rule: #d9e1df;
+  --accent: #1f4e6b;     /* ledger blue */
+  --accent-soft: #e2edf3;
+  --on-accent: #ffffff;
+  --dr: #1c7550;         /* receipts */
+  --dr-soft: #e3f3ea;
+  --cr: #a83636;         /* payments */
+  --cr-soft: #f8e6e6;
+  --warn-soft: #fbf1d9;
+  --warn: #7a5a12;
+  --shadow: 0 1px 2px rgba(23, 37, 44, .06), 0 6px 20px rgba(23, 37, 44, .06);
+  --font: 'Book Antiqua', 'Palatino Linotype', Palatino, 'URW Palladio L', P052, Georgia, serif;
+  --r: 10px;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --paper: #0f1619; --sheet: #172126; --sheet-2: #1d292f; --ink: #e5ecee; --muted: #93a3aa;
+    --rule: #2b3940; --accent: #74b3d8; --accent-soft: #1d3442; --on-accent: #0c1a22;
+    --dr: #5cc495; --dr-soft: #17342a; --cr: #ee8585; --cr-soft: #3a1f22;
+    --warn-soft: #3a3020; --warn: #e9c97a; --shadow: 0 1px 2px rgba(0,0,0,.3), 0 6px 20px rgba(0,0,0,.25);
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --paper: #0f1619; --sheet: #172126; --sheet-2: #1d292f; --ink: #e5ecee; --muted: #93a3aa;
+  --rule: #2b3940; --accent: #74b3d8; --accent-soft: #1d3442; --on-accent: #0c1a22;
+  --dr: #5cc495; --dr-soft: #17342a; --cr: #ee8585; --cr-soft: #3a1f22;
+  --warn-soft: #3a3020; --warn: #e9c97a; --shadow: 0 1px 2px rgba(0,0,0,.3), 0 6px 20px rgba(0,0,0,.25);
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+body {
+  margin: 0; background: var(--paper); color: var(--ink);
+  font-family: var(--font); font-size: 15.5px; line-height: 1.5;
+}
+.wrap { max-width: 1240px; margin: 0 auto; padding-inline: 20px; padding-block: 20px 48px; display: grid; gap: 18px; }
+@media (max-width: 480px) { .wrap { padding-inline: 16px; } }
+h1, h2, h3 { margin: 0; line-height: 1.2; text-wrap: balance; }
+button, input, select, textarea { font: inherit; color: inherit; }
+.num { font-variant-numeric: tabular-nums lining-nums; white-space: nowrap; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.label { font-size: .72rem; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); }
+
+/* ── Top bar ── */
+.top { display: flex; flex-wrap: wrap; align-items: center; gap: 14px 20px; justify-content: space-between; }
+.brand { display: flex; align-items: center; gap: 12px; }
+.mark {
+  width: 42px; height: 42px; border-radius: 9px; background: var(--accent); color: var(--on-accent);
+  display: grid; place-items: center; font-weight: 700; font-size: 1.05rem; letter-spacing: .02em;
+}
+.brand h1 { font-size: 1.45rem; letter-spacing: .02em; }
+.brand p { margin: 0; color: var(--muted); font-size: .85rem; }
+.book-bar { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.book-bar select { min-width: 0; max-width: 260px; }
+
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+  border: 1px solid var(--rule); background: var(--sheet); border-radius: 8px;
+  padding: 8px 14px; cursor: pointer; transition: background .15s, border-color .15s;
+}
+.btn:hover { border-color: var(--accent); }
+.btn.primary { background: var(--accent); border-color: var(--accent); color: var(--on-accent); font-weight: 700; }
+.btn.primary:hover { filter: brightness(1.08); }
+.btn.danger { color: var(--cr); }
+.btn.danger.solid { background: var(--cr); border-color: var(--cr); color: var(--sheet); }
+.btn.ghost { border-color: transparent; background: transparent; }
+.btn[disabled] { opacity: .55; cursor: not-allowed; }
+.btn.sm { padding: 4px 9px; font-size: .85rem; }
+
+input, select, textarea {
+  width: 100%; border: 1px solid var(--rule); background: var(--sheet-2); border-radius: 8px; padding: 8px 10px;
+}
+input:focus, select:focus, textarea:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
+
+.notice { padding: 10px 14px; border-radius: 8px; background: var(--warn-soft); color: var(--warn); font-size: .92rem; }
+
+/* ── Book header + summary ── */
+.card { background: var(--sheet); border: 1px solid var(--rule); border-radius: var(--r); box-shadow: var(--shadow); }
+.book-head { padding: 16px 20px; display: flex; flex-wrap: wrap; gap: 10px 24px; align-items: baseline; justify-content: space-between; }
+.book-head h2 { font-size: 1.3rem; }
+.book-meta { color: var(--muted); font-size: .9rem; display: flex; flex-wrap: wrap; gap: 4px 16px; }
+.summary {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  border-top: 1px solid var(--rule);
+}
+.summary > div { padding: 14px 20px; display: grid; gap: 2px; min-width: 0; }
+.summary > div + div { border-left: 1px solid var(--rule); }
+.summary .v { font-size: 1.35rem; font-weight: 700; }
+.summary .s { font-size: .82rem; color: var(--muted); }
+.dr { color: var(--dr); } .cr { color: var(--cr); }
+@media (max-width: 700px) {
+  .summary { grid-template-columns: 1fr 1fr; }
+  .summary > div + div { border-left: none; }
+  .summary > div:nth-child(even) { border-left: 1px solid var(--rule); }
+  .summary > div:nth-child(n+3) { border-top: 1px solid var(--rule); }
+}
+
+/* ── Main grid ── */
+.main { display: grid; grid-template-columns: 340px minmax(0, 1fr); gap: 18px; align-items: start; }
+@media (max-width: 980px) { .main { grid-template-columns: minmax(0, 1fr); } }
+.side { display: grid; gap: 18px; min-width: 0; }
+
+/* Entry form */
+.form { padding: 18px 18px 20px; display: grid; gap: 12px; }
+.form h3 { font-size: 1.1rem; display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+.field { display: grid; gap: 4px; min-width: 0; }
+.field > span { font-size: .82rem; color: var(--muted); }
+.row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.seg { display: grid; grid-template-columns: 1fr 1fr; border: 1px solid var(--rule); border-radius: 8px; overflow: hidden; }
+.seg button { border: none; background: var(--sheet-2); padding: 9px; cursor: pointer; color: var(--muted); }
+.seg button[aria-pressed="true"].r { background: var(--dr-soft); color: var(--dr); font-weight: 700; }
+.seg button[aria-pressed="true"].p { background: var(--cr-soft); color: var(--cr); font-weight: 700; }
+.check { display: flex; gap: 8px; align-items: center; font-size: .9rem; color: var(--muted); }
+.check input { width: auto; }
+.calc { font-size: .88rem; color: var(--muted); background: var(--sheet-2); border-radius: 8px; padding: 8px 10px; }
+.calc strong { color: var(--ink); }
+.form-msg { font-size: .88rem; min-height: 1.2em; }
+.form-msg.err { color: var(--cr); }
+.form-msg.ok { color: var(--dr); }
+
+/* Head-wise */
+.heads { padding: 16px 18px; display: grid; gap: 10px; }
+.heads h3 { font-size: 1.05rem; }
+.head-row { display: grid; grid-template-columns: minmax(0,1fr) auto; gap: 2px 10px; font-size: .9rem; }
+.head-row .bar { grid-column: 1 / -1; height: 5px; border-radius: 3px; background: var(--sheet-2); overflow: hidden; }
+.head-row .bar i { display: block; height: 100%; border-radius: 3px; }
+.head-row .name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+/* Register */
+.register { min-width: 0; overflow: hidden; }
+.filters { padding: 14px 16px; display: flex; flex-wrap: wrap; gap: 8px; align-items: center; border-bottom: 1px solid var(--rule); }
+.filters select { width: auto; }
+.filters input[type="search"] { flex: 1 1 180px; width: auto; min-width: 0; }
+.filters .spacer { flex: 1 0 0; }
+table { width: 100%; border-collapse: collapse; }
+th, td { padding: 10px 12px; text-align: left; vertical-align: top; border-bottom: 1px solid var(--rule); }
+th { font-size: .74rem; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); font-weight: 400; background: var(--sheet-2); }
+th.amt, td.amt { text-align: right; }
+tbody tr:hover { background: var(--sheet-2); }
+.part strong { display: block; font-weight: 700; }
+.part .to { color: var(--muted); font-style: italic; margin-right: 4px; font-weight: 400; }
+.part small { display: block; color: var(--muted); font-size: .82rem; }
+.chip { display: inline-block; font-size: .76rem; padding: 1px 8px; border-radius: 999px; background: var(--accent-soft); color: var(--accent); }
+.vch { font-size: .82rem; color: var(--muted); }
+.acts { white-space: nowrap; text-align: right; }
+.opening-row td { color: var(--muted); font-style: italic; background: var(--sheet-2); }
+tfoot td { font-weight: 700; background: var(--sheet-2); border-bottom: none; }
+.empty { padding: 40px 24px; text-align: center; color: var(--muted); display: grid; gap: 8px; justify-items: center; }
+.empty h3 { color: var(--ink); font-size: 1.15rem; }
+
+/* Phone: each entry becomes a compact ledger card */
+@media (max-width: 640px) {
+  thead { display: none; }
+  table, tbody, tfoot { display: block; }
+  tbody tr, tfoot tr {
+    display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 2px 12px;
+    padding: 12px 14px; border-bottom: 1px solid var(--rule);
+  }
+  td { border: none; padding: 0; }
+  td.c-date { grid-column: 1; font-size: .85rem; color: var(--muted); }
+  td.c-acts { grid-column: 2; grid-row: 1; }
+  td.c-part { grid-column: 1 / -1; }
+  td.c-head { grid-column: 1; }
+  td.c-amt { grid-column: 2; grid-row: 3; text-align: right; }
+  td.c-amt:empty { display: none; }
+  td.c-bal { grid-column: 1 / -1; text-align: right; font-size: .82rem; color: var(--muted); }
+  td.c-bal::before { content: 'Balance '; }
+  .opening-row td.c-part, tfoot td.c-part { grid-column: 1; }
+  .opening-row td, tfoot td { background: none; }
+  tfoot td.c-amt { grid-row: auto; }
+  tfoot td.c-bal { display: none; }
+  tfoot td.c-amt.dr::before { content: 'Rec '; font-weight: 400; color: var(--muted); }
+  tfoot td.c-amt.cr::before { content: 'Pay '; font-weight: 400; color: var(--muted); }
+}
+
+/* Modal + toast */
+.overlay { position: fixed; inset: 0; background: rgba(10, 18, 22, .45); display: grid; place-items: center; padding: 16px; z-index: 20; }
+.modal { width: min(440px, 100%); padding: 20px; display: grid; gap: 12px; }
+.modal h3 { font-size: 1.15rem; }
+.modal .actions { display: flex; gap: 8px; justify-content: flex-end; flex-wrap: wrap; }
+.toast {
+  position: fixed; left: 50%; bottom: calc(18px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%);
+  background: var(--ink); color: var(--paper); padding: 10px 16px; border-radius: 8px; z-index: 30; max-width: calc(100% - 32px);
+}
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+
+<div class="wrap">
+  <header class="top">
+    <div class="brand">
+      <div class="mark" aria-hidden="true">CS</div>
+      <div>
+        <h1>CSWA Books</h1>
+        <p>Cash &amp; bank book · receipts, payments and GST</p>
+      </div>
+    </div>
+    <div class="book-bar">
+      <label class="label" for="bookSelect">Book</label>
+      <select id="bookSelect" aria-label="Select book"></select>
+      <button class="btn" id="editBookBtn" type="button">Edit book</button>
+      <button class="btn primary" id="newBookBtn" type="button">+ New book</button>
+    </div>
+  </header>
+
+  <div id="notice" class="notice" hidden></div>
+
+  <section id="bookCard" class="card" aria-live="polite">
+    <div class="book-head">
+      <div>
+        <h2 id="bookName">Loading books…</h2>
+        <div class="book-meta" id="bookMeta"></div>
+      </div>
+      <div class="label" id="periodLabel"></div>
+    </div>
+    <div class="summary" id="summary"></div>
+  </section>
+
+  <div class="main" id="main">
+    <aside class="side">
+      <form class="card form" id="entryForm" autocomplete="off" novalidate>
+        <h3><span id="formTitle">New entry</span>
+          <button type="button" class="btn sm ghost" id="cancelEdit" hidden>Cancel edit</button></h3>
+        <div class="seg" role="group" aria-label="Entry type">
+          <button type="button" class="r" id="typeR" aria-pressed="true">Receipt (Dr)</button>
+          <button type="button" class="p" id="typeP" aria-pressed="false">Payment (Cr)</button>
+        </div>
+        <div class="row2">
+          <label class="field"><span>Date</span><input type="date" id="fDate" required></label>
+          <label class="field"><span>Voucher no.</span><input id="fVch" maxlength="20"></label>
+        </div>
+        <label class="field"><span id="partyLabel">Received from</span><input id="fParty" maxlength="80" required placeholder="Party / payee name"></label>
+        <div class="row2">
+          <label class="field"><span>Ledger head</span><input id="fHead" list="headList" maxlength="60" required placeholder="e.g. Sales"></label>
+          <label class="field"><span>Mode</span>
+            <select id="fMode"><option>Cash</option><option>Bank</option><option>UPI</option><option>Cheque</option></select></label>
+        </div>
+        <datalist id="headList"></datalist>
+        <div class="row2">
+          <label class="field"><span>Amount (₹)</span><input id="fAmt" inputmode="decimal" required placeholder="0.00"></label>
+          <label class="field"><span>GST rate</span>
+            <select id="fRate">
+              <option value="0">No GST</option><option value="3">3%</option><option value="5">5%</option>
+              <option value="12">12%</option><option value="18">18%</option><option value="28">28%</option><option value="40">40%</option>
+            </select></label>
+        </div>
+        <label class="check"><input type="checkbox" id="fIncl" checked> Amount includes GST</label>
+        <div class="calc num" id="calc">Enter an amount to see the GST split.</div>
+        <label class="field"><span>Narration</span><textarea id="fNote" rows="2" maxlength="200" placeholder="Invoice no., cheque no., purpose…"></textarea></label>
+        <button class="btn primary" id="saveBtn" type="submit">Save entry</button>
+        <div class="form-msg" id="formMsg" role="status"></div>
+      </form>
+
+      <section class="card heads" id="headsCard">
+        <h3>Head-wise totals</h3>
+        <div id="heads"></div>
+      </section>
+    </aside>
+
+    <section class="card register">
+      <div class="filters">
+        <select id="qMonth" aria-label="Month"></select>
+        <select id="qType" aria-label="Type"><option value="">Receipts &amp; payments</option><option value="R">Receipts only</option><option value="P">Payments only</option></select>
+        <select id="qMode" aria-label="Mode"><option value="">All modes</option><option>Cash</option><option>Bank</option><option>UPI</option><option>Cheque</option></select>
+        <input type="search" id="qText" placeholder="Search party, head, voucher…" aria-label="Search">
+        <button class="btn" id="exportBtn" type="button" hidden>Export CSV</button>
+      </div>
+      <div id="registerBody"></div>
+    </section>
+  </div>
+</div>
+
+<div id="modalRoot"></div>
+<div id="toast" class="toast" role="status" hidden></div>
+
+<script>
+(() => {
+  'use strict';
+
+  /* ───────────── helpers ───────────── */
+  const $ = (id) => document.getElementById(id);
+  const inr = new Intl.NumberFormat('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  const money = (paise) => '₹' + inr.format((paise || 0) / 100);
+  const toPaise = (s) => {
+    const n = Number(String(s).replace(/[,₹\s]/g, ''));
+    return Number.isFinite(n) ? Math.round(n * 100) : NaN;
+  };
+  const todayISO = () => { const d = new Date(); d.setMinutes(d.getMinutes() - d.getTimezoneOffset()); return d.toISOString().slice(0, 10); };
+  const fmtDate = (iso) => { const [y, m, d] = iso.split('-'); return `${d}-${m}-${y}`; };
+  const monthName = (ym) => new Date(ym + '-01T00:00:00').toLocaleDateString('en-IN', { month: 'long', year: 'numeric' });
+  const fyOf = (iso) => { const [y, m] = iso.split('-').map(Number); const s = m >= 4 ? y : y - 1; return `FY ${s}-${String(s + 1).slice(2)}`; };
+  const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  const store = { get(k) { try { return localStorage.getItem(k); } catch { return null; } }, set(k, v) { try { localStorage.setItem(k, v); } catch {} } };
+  const DEFAULT_HEADS = ['Sales', 'Professional fees received', 'Interest received', 'Capital introduced', 'Loan received',
+    'Purchases', 'Rent', 'Salaries & wages', 'Electricity', 'Telephone & internet', 'Office expenses', 'Travelling',
+    'Printing & stationery', 'Bank charges', 'GST paid', 'TDS paid', 'Drawings', 'Loan repaid'];
+
+  let toastTimer;
+  function toast(msg) { const t = $('toast'); t.textContent = msg; t.hidden = false; clearTimeout(toastTimer); toastTimer = setTimeout(() => (t.hidden = true), 2600); }
+
+  /* ───────────── state ───────────── */
+  const S = {
+    db: null, user: null, downloads: null, live: false, readOnly: false, loaded: false,
+    books: [], bookId: null, entries: [], unsubEntries: null,
+    type: 'R', editingId: null,
+    q: { month: '', type: '', mode: '', text: '' },
+    profiles: {},
+  };
+
+  /* Local (unsaved) fallback when the page runs outside claude.ai */
+  const local = { books: [], entries: {} };
+
+  /* ───────────── data layer ───────────── */
+  const entriesCol = (bookId) => S.db.doc('books/' + bookId).collection('entries');
+
+  async function saveBook(id, data) {
+    if (!S.live) {
+      const i = local.books.findIndex((b) => b.id === id);
+      if (i >= 0) local.books[i] = { id, ...data }; else local.books.push({ id, ...data });
+      onBooks(local.books.map((b) => ({ ...b })));
+      return;
+    }
+    await S.db.doc('books/' + id).set(data);
+  }
+  async function saveEntry(id, data) {
+    if (!S.live) {
+      const list = (local.entries[S.bookId] ||= []);
+      const i = list.findIndex((e) => e.id === id);
+      if (i >= 0) list[i] = { id, ...data }; else list.push({ id, ...data });
+      onEntries(list.map((e) => ({ ...e })));
+      return;
+    }
+    await entriesCol(S.bookId).doc(id).set(data);
+  }
+  async function removeEntry(id) {
+    if (!S.live) {
+      local.entries[S.bookId] = (local.entries[S.bookId] || []).filter((e) => e.id !== id);
+      onEntries(local.entries[S.bookId].map((e) => ({ ...e })));
+      return;
+    }
+    await entriesCol(S.bookId).doc(id).delete();
+  }
+  const newId = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
+
+  function writeFailed(err) {
+    if (err && err.code === 'invalid_argument') {
+      setReadOnly(true);
+      return 'You have view-only access to these books.';
+    }
+    if (err && err.code === 'quota_exceeded') return 'Storage is full for this page. Delete old entries to add new ones.';
+    return 'Could not save. Check your connection and try again.';
+  }
+
+  function onBooks(list) {
+    S.books = list.sort((a, b) => (a.name || '').localeCompare(b.name || ''));
+    S.loaded = true;
+    const remembered = store.get('cswa-books:book');
+    if (!S.books.some((b) => b.id === S.bookId)) {
+      S.bookId = (S.books.find((b) => b.id === remembered) || S.books[0] || {}).id || null;
+      subscribeEntries();
+    }
+    render();
+  }
+  function onEntries(list) { S.entries = list; render(); }
+
+  function subscribeEntries() {
+    if (S.unsubEntries) { S.unsubEntries(); S.unsubEntries = null; }
+    S.entries = [];
+    if (!S.bookId) return;
+    store.set('cswa-books:book', S.bookId);
+    if (!S.live) { onEntries((local.entries[S.bookId] || []).map((e) => ({ ...e }))); return; }
+    const forBook = S.bookId;
+    S.unsubEntries = entriesCol(forBook).onSnapshot(
+      (snap) => { if (S.bookId === forBook) onEntries(snap.docs.map((d) => ({ id: d.id, ...d.data() }))); },
+      () => showNotice('Live updates paused. Reload the page to reconnect.')
+    );
+  }
+
+  function showNotice(msg) { const n = $('notice'); n.textContent = msg; n.hidden = !msg; }
+  function setReadOnly(on) {
+    S.readOnly = on;
+    for (const el of $('entryForm').elements) el.disabled = on;
+    $('newBookBtn').disabled = on; $('editBookBtn').disabled = on || !S.bookId;
+    if (on) showNotice('You can view these books but not change them. Ask the owner for Contributor access to add entries.');
+    render();
+  }
+
+  /* ───────────── derived numbers ───────────── */
+  function ledger() {
+    const book = S.books.find((b) => b.id === S.bookId);
+    const opening = book?.opening || 0;
+    const sorted = [...S.entries].sort((a, b) => a.date.localeCompare(b.date) || (a.createdAt || '').localeCompare(b.createdAt || ''));
+    let bal = opening;
+    for (const e of sorted) { bal += e.type === 'R' ? e.total : -e.total; e._bal = bal; }
+    return { book, opening, sorted };
+  }
+
+  function nextVoucher(type) {
+    const prefix = type === 'R' ? 'R-' : 'P-';
+    let max = 0;
+    for (const e of S.entries) if (e.type === type) { const m = /(\d+)\s*$/.exec(e.vch || ''); if (m) max = Math.max(max, +m[1]); }
+    return prefix + String(max + 1).padStart(4, '0');
+  }
+
+  /* ───────────── render ───────────── */
+  function render() {
+    renderBookBar();
+    const { book, opening, sorted } = ledger();
+    const hasBook = !!book;
+    $('main').hidden = !hasBook;
+    $('exportBtn').hidden = !hasBook || !S.downloads || !S.entries.length;
+
+    if (!hasBook) {
+      $('bookName').textContent = S.loaded ? 'No books yet' : 'Loading books…';
+      $('bookMeta').innerHTML = S.loaded
+        ? '<span>Create a book for each client or entity, for example “ABC Traders — Cash &amp; Bank”. Entries you add are shared with everyone who can open this page.</span>' : '';
+      $('periodLabel').textContent = '';
+      $('summary').innerHTML = S.loaded && !S.readOnly
+        ? '<div><button class="btn primary" type="button" id="firstBookBtn">+ Create your first book</button></div>' : '';
+      const fb = $('firstBookBtn'); if (fb) fb.onclick = () => openBookModal(null);
+      return;
+    }
+
+    $('bookName').textContent = book.name;
+    $('bookMeta').innerHTML = [
+      book.gstin ? `<span>GSTIN ${esc(book.gstin)}</span>` : '<span>No GSTIN</span>',
+      `<span>Opening balance <span class="num">${money(opening)}</span></span>`,
+      `<span>${S.entries.length} ${S.entries.length === 1 ? 'entry' : 'entries'}</span>`,
+    ].join('');
+
+    // Month options
+    const months = [...new Set(sorted.map((e) => e.date.slice(0, 7)))].sort().reverse();
+    if (S.q.month && !months.includes(S.q.month)) S.q.month = '';
+    $('qMonth').innerHTML = '<option value="">All dates</option>' + months.map((m) => `<option value="${m}" ${m === S.q.month ? 'selected' : ''}>${monthName(m)}</option>`).join('');
+
+    // Period figures (month filter only)
+    const inPeriod = (e) => !S.q.month || e.date.startsWith(S.q.month);
+    const before = sorted.filter((e) => S.q.month && e.date < S.q.month + '-01');
+    const periodOpening = before.length ? before[before.length - 1]._bal : opening;
+    const period = sorted.filter(inPeriod);
+    const sum = (arr, f) => arr.reduce((t, e) => t + (f(e) || 0), 0);
+    const rec = sum(period.filter((e) => e.type === 'R'), (e) => e.total);
+    const pay = sum(period.filter((e) => e.type === 'P'), (e) => e.total);
+    const gstOut = sum(period.filter((e) => e.type === 'R'), (e) => e.gst);
+    const gstIn = sum(period.filter((e) => e.type === 'P'), (e) => e.gst);
+    const closing = periodOpening + rec - pay;
+    const netGst = gstOut - gstIn;
+    $('periodLabel').textContent = S.q.month ? monthName(S.q.month) : (sorted.length ? `${fmtDate(sorted[0].date)} to ${fmtDate(sorted[sorted.length - 1].date)}` : 'No entries yet');
+    $('summary').innerHTML = `
+      <div><span class="label">Opening</span><span class="v num">${money(periodOpening)}</span><span class="s">${S.q.month ? 'brought forward' : 'as per book'}</span></div>
+      <div><span class="label">Receipts</span><span class="v num dr">${money(rec)}</span><span class="s">${period.filter((e) => e.type === 'R').length} vouchers</span></div>
+      <div><span class="label">Payments</span><span class="v num cr">${money(pay)}</span><span class="s">${period.filter((e) => e.type === 'P').length} vouchers</span></div>
+      <div><span class="label">Closing balance</span><span class="v num ${closing < 0 ? 'cr' : ''}">${money(closing)}</span><span class="s">${closing < 0 ? 'overdrawn' : 'carried forward'}</span></div>
+      <div><span class="label">GST ${netGst >= 0 ? 'payable' : 'credit'}</span><span class="v num">${money(Math.abs(netGst))}</span><span class="s num">Output ${money(gstOut)} · Input ${money(gstIn)}</span></div>`;
+
+    renderHeads(period);
+    renderRegister(sorted, periodOpening);
+    renderHeadList();
+  }
+
+  function renderBookBar() {
+    const sel = $('bookSelect');
+    sel.innerHTML = S.books.length
+      ? S.books.map((b) => `<option value="${esc(b.id)}" ${b.id === S.bookId ? 'selected' : ''}>${esc(b.name)}</option>`).join('')
+      : `<option value="">${S.loaded ? 'No books yet' : 'Loading…'}</option>`;
+    sel.disabled = !S.books.length;
+    $('editBookBtn').disabled = S.readOnly || !S.bookId;
+    $('newBookBtn').disabled = S.readOnly || !S.loaded;
+  }
+
+  function renderHeads(period) {
+    const by = {};
+    for (const e of period) { const k = e.head || 'Unclassified'; (by[k] ||= { R: 0, P: 0 })[e.type] += e.total; }
+    const rows = Object.entries(by).map(([k, v]) => ({ k, v, t: v.R + v.P })).sort((a, b) => b.t - a.t).slice(0, 10);
+    const max = Math.max(1, ...rows.map((r) => r.t));
+    $('heads').innerHTML = rows.length ? rows.map(({ k, v, t }) => {
+      const isR = v.R >= v.P;
+      return `<div class="head-row"><span class="name">${esc(k)}</span><span class="num ${isR ? 'dr' : 'cr'}">${money(isR ? v.R : v.P)}</span>
+        <span class="bar"><i style="width:${(t / max * 100).toFixed(1)}%;background:var(${isR ? '--dr' : '--cr'})"></i></span></div>`;
+    }).join('') : '<span class="s" style="color:var(--muted)">Totals by ledger head appear once you add entries.</span>';
+  }
+
+  function renderRegister(sorted, periodOpening) {
+    const q = S.q, text = q.text.trim().toLowerCase();
+    const rows = sorted.filter((e) =>
+      (!q.month || e.date.startsWith(q.month)) && (!q.type || e.type === q.type) && (!q.mode || e.mode === q.mode) &&
+      (!text || [e.party, e.head, e.vch, e.note, e.mode].join(' ').toLowerCase().includes(text)));
+
+    if (!S.entries.length) {
+      $('registerBody').innerHTML = `<div class="empty"><h3>This book has no entries yet</h3>
+        <p>Add the first receipt or payment with the form. Each entry gets a voucher number, and the running balance, GST and head-wise totals update for everyone.</p></div>`;
+      return;
+    }
+    if (!rows.length) {
+      $('registerBody').innerHTML = '<div class="empty"><h3>No entries match</h3><p>Change the month, type, mode or search to see more.</p></div>';
+      return;
+    }
+    const filtered = q.type || q.mode || text;
+    const rec = rows.filter((e) => e.type === 'R').reduce((t, e) => t + e.total, 0);
+    const pay = rows.filter((e) => e.type === 'P').reduce((t, e) => t + e.total, 0);
+    const actions = (e) => S.readOnly ? '' :
+      `<button class="btn sm ghost" data-edit="${esc(e.id)}" aria-label="Edit entry">Edit</button><button class="btn sm ghost danger" data-del="${esc(e.id)}" aria-label="Delete entry">Delete</button>`;
+
+    $('registerBody').innerHTML = `<div style="overflow-x:auto"><table>
+      <thead><tr><th>Date</th><th>Particulars</th><th>Head · Mode</th><th class="amt">Receipts (Dr)</th><th class="amt">Payments (Cr)</th><th class="amt">Balance</th><th></th></tr></thead>
+      <tbody>
+        ${!filtered ? `<tr class="opening-row"><td class="c-date"></td><td class="c-part">${q.month ? 'Balance brought forward' : 'Opening balance'}</td><td class="c-head"></td><td class="c-amt"></td><td class="c-amt"></td><td class="amt num c-bal">${money(periodOpening)}</td><td class="c-acts"></td></tr>` : ''}
+        ${rows.map((e) => `<tr>
+          <td class="num c-date">${fmtDate(e.date)}</td>
+          <td class="part c-part"><strong><span class="to">${e.type === 'R' ? 'To' : 'By'}</span>${esc(e.party)}</strong>
+            <small>${e.vch ? `<span class="vch">${esc(e.vch)}</span>` : ''}${e.note ? ' · ' + esc(e.note) : ''}${e.gst ? ` · <span class="num">GST ${e.rate}% ${money(e.gst)}</span>` : ''}${e.by ? ` · <span data-uid="${esc(e.by)}">${esc(S.profiles[e.by]?.name || '')}</span>` : ''}</small></td>
+          <td class="c-head">${esc(e.head)} <span class="chip">${esc(e.mode)}</span></td>
+          <td class="amt num dr c-amt">${e.type === 'R' ? money(e.total) : ''}</td>
+          <td class="amt num cr c-amt">${e.type === 'P' ? money(e.total) : ''}</td>
+          <td class="amt num c-bal ${e._bal < 0 ? 'cr' : ''}">${money(e._bal)}</td>
+          <td class="acts c-acts">${actions(e)}</td></tr>`).join('')}
+      </tbody>
+      <tfoot><tr><td class="c-date"></td><td class="c-part">${filtered ? 'Total of filtered entries' : 'Total'}</td><td class="c-head"></td>
+        <td class="amt num dr c-amt">${money(rec)}</td><td class="amt num cr c-amt">${money(pay)}</td><td class="c-bal"></td><td class="c-acts"></td></tr></tfoot>
+    </table></div>`;
+    resolveNames(rows);
+  }
+
+  async function resolveNames(rows) {
+    if (!S.user) return;
+    const ids = [...new Set(rows.map((e) => e.by).filter(Boolean))];
+    if (!ids.length) return;
+    const ps = await S.user.profiles(ids);
+    S.profiles = { ...S.profiles, ...ps };
+    document.querySelectorAll('[data-uid]').forEach((el) => {
+      const p = ps[el.dataset.uid]; el.textContent = p ? ('added by ' + (p.isMe ? 'you' : (p.name || 'a teammate'))) : '';
+    });
+  }
+
+  function renderHeadList() {
+    const used = S.entries.map((e) => e.head).filter(Boolean);
+    const all = [...new Set([...used, ...DEFAULT_HEADS])];
+    $('headList').innerHTML = all.map((h) => `<option value="${esc(h)}"></option>`).join('');
+  }
+
+  /* ───────────── entry form ───────────── */
+  function setType(t) {
+    S.type = t;
+    $('typeR').setAttribute('aria-pressed', t === 'R');
+    $('typeP').setAttribute('aria-pressed', t === 'P');
+    $('partyLabel').textContent = t === 'R' ? 'Received from' : 'Paid to';
+    if (!S.editingId) $('fVch').value = nextVoucher(t);
+    updateCalc();
+  }
+  function split() {
+    const amt = toPaise($('fAmt').value), rate = Number($('fRate').value), incl = $('fIncl').checked;
+    if (!Number.isFinite(amt) || amt <= 0) return null;
+    if (!rate) return { taxable: amt, gst: 0, total: amt, rate: 0 };
+    if (incl) { const taxable = Math.round(amt * 100 / (100 + rate)); return { taxable, gst: amt - taxable, total: amt, rate }; }
+    const gst = Math.round(amt * rate / 100); return { taxable: amt, gst, total: amt + gst, rate };
+  }
+  function updateCalc() {
+    const s = split();
+    $('calc').innerHTML = !s ? 'Enter an amount to see the GST split.'
+      : s.rate ? `Taxable ${money(s.taxable)} + GST ${money(s.gst)} = <strong>${money(s.total)}</strong>`
+      : `Total <strong>${money(s.total)}</strong> (no GST)`;
+  }
+  function resetForm(keepDate) {
+    const d = keepDate ? $('fDate').value : todayISO();
+    $('entryForm').reset();
+    $('fDate').value = d || todayISO();
+    S.editingId = null;
+    $('formTitle').textContent = 'New entry';
+    $('saveBtn').textContent = 'Save entry';
+    $('cancelEdit').hidden = true;
+    setType(S.type);
+  }
+  function startEdit(id) {
+    const e = S.entries.find((x) => x.id === id); if (!e) return;
+    S.editingId = id;
+    setType(e.type);
+    $('fDate').value = e.date; $('fVch').value = e.vch || ''; $('fParty').value = e.party; $('fHead').value = e.head;
+    $('fMode').value = e.mode; $('fRate').value = String(e.rate || 0); $('fIncl').checked = true;
+    $('fAmt').value = (e.total / 100).toFixed(2); $('fNote').value = e.note || '';
+    $('formTitle').textContent = 'Edit entry ' + (e.vch || '');
+    $('saveBtn').textContent = 'Update entry';
+    $('cancelEdit').hidden = false;
+    updateCalc();
+    $('entryForm').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    $('fParty').focus({ preventScroll: true });
+  }
+
+  async function submitEntry(ev) {
+    ev.preventDefault();
+    const msg = $('formMsg'); msg.className = 'form-msg';
+    const s = split();
+    const date = $('fDate').value, party = $('fParty').value.trim(), head = $('fHead').value.trim();
+    if (!date) return (msg.className += ' err', msg.textContent = 'Choose the entry date.');
+    if (!party) return (msg.className += ' err', msg.textContent = `Enter who the money was ${S.type === 'R' ? 'received from' : 'paid to'}.`);
+    if (!head) return (msg.className += ' err', msg.textContent = 'Choose a ledger head, for example Sales or Rent.');
+    if (!s) return (msg.className += ' err', msg.textContent = 'Enter an amount greater than zero.');
+
+    const prev = S.editingId ? S.entries.find((x) => x.id === S.editingId) : null;
+    const now = new Date().toISOString();
+    const me = S.user ? await S.user.id() : null;
+    const data = {
+      type: S.type, date, vch: $('fVch').value.trim(), party, head, mode: $('fMode').value,
+      rate: s.rate, taxable: s.taxable, gst: s.gst, total: s.total, note: $('fNote').value.trim(),
+      by: prev?.by || me || '', createdAt: prev?.createdAt || now,
+      ...(prev ? { updatedAt: now, updatedBy: me || '' } : {}),
+    };
+    $('saveBtn').disabled = true;
+    try {
+      await saveEntry(S.editingId || newId(), data);
+      msg.className += ' ok';
+      msg.textContent = `${prev ? 'Updated' : 'Saved'} ${data.vch || 'entry'}: ${data.type === 'R' ? 'received' : 'paid'} ${money(data.total)}.`;
+      resetForm(true);
+    } catch (err) {
+      msg.className += ' err'; msg.textContent = writeFailed(err);
+    } finally { $('saveBtn').disabled = S.readOnly; }
+  }
+
+  /* ───────────── modals ───────────── */
+  function modal(html, onMount) {
+    const root = $('modalRoot');
+    root.innerHTML = `<div class="overlay"><div class="card modal" role="dialog" aria-modal="true">${html}</div></div>`;
+    const close = () => { root.innerHTML = ''; document.removeEventListener('keydown', onKey); };
+    const onKey = (e) => { if (e.key === 'Escape') close(); };
+    document.addEventListener('keydown', onKey);
+    root.querySelector('.overlay').addEventListener('click', (e) => { if (e.target.classList.contains('overlay')) close(); });
+    onMount(root, close);
+  }
+
+  function openBookModal(book) {
+    modal(`<h3>${book ? 'Edit book' : 'New book'}</h3>
+      <label class="field"><span>Book name</span><input id="mName" maxlength="80" placeholder="e.g. ABC Traders — Cash & Bank" value="${esc(book?.name || '')}"></label>
+      <label class="field"><span>GSTIN (optional)</span><input id="mGstin" maxlength="15" placeholder="15-character GSTIN" value="${esc(book?.gstin || '')}" style="text-transform:uppercase"></label>
+      <label class="field"><span>Opening balance (₹)</span><input id="mOpen" inputmode="decimal" placeholder="0.00" value="${book ? (book.opening / 100).toFixed(2) : ''}"></label>
+      <div class="form-msg err" id="mMsg" role="status"></div>
+      <div class="actions"><button class="btn" type="button" id="mCancel">Cancel</button><button class="btn primary" type="button" id="mSave">${book ? 'Save changes' : 'Create book'}</button></div>`,
+    (root, close) => {
+      root.querySelector('#mName').focus();
+      root.querySelector('#mCancel').onclick = close;
+      root.querySelector('#mSave').onclick = async () => {
+        const name = root.querySelector('#mName').value.trim();
+        const gstin = root.querySelector('#mGstin').value.trim().toUpperCase();
+        const openRaw = root.querySelector('#mOpen').value.trim();
+        const opening = openRaw ? toPaise(openRaw) : 0;
+        const m = root.querySelector('#mMsg');
+        if (!name) return (m.textContent = 'Give the book a name.');
+        if (gstin && !/^[0-9]{2}[A-Z0-9]{13}$/.test(gstin)) return (m.textContent = 'A GSTIN is 15 characters: 2-digit state code followed by 13 letters or digits.');
+        if (!Number.isFinite(opening)) return (m.textContent = 'Enter the opening balance as a number, for example 25000.');
+        const id = book?.id || newId();
+        const me = S.user ? await S.user.id() : null;
+        try {
+          await saveBook(id, { name, gstin, opening, createdAt: book?.createdAt || new Date().toISOString(), by: book?.by || me || '' });
+          close();
+          if (!book) { S.bookId = id; subscribeEntries(); render(); }
+          toast(book ? 'Book updated' : 'Book created');
+        } catch (err) { m.textContent = writeFailed(err); }
+      };
+    });
+  }
+
+  function confirmDelete(id) {
+    const e = S.entries.find((x) => x.id === id); if (!e) return;
+    modal(`<h3>Delete ${esc(e.vch || 'this entry')}?</h3>
+      <p>${e.type === 'R' ? 'Receipt from' : 'Payment to'} <strong>${esc(e.party)}</strong> of <span class="num">${money(e.total)}</span> on ${fmtDate(e.date)} will be removed for everyone. This can't be undone.</p>
+      <div class="actions"><button class="btn" type="button" id="dCancel">Keep entry</button><button class="btn danger solid" type="button" id="dOk">Delete entry</button></div>`,
+    (root, close) => {
+      root.querySelector('#dCancel').onclick = close;
+      root.querySelector('#dCancel').focus();
+      root.querySelector('#dOk').onclick = async () => {
+        try { await removeEntry(id); close(); toast('Entry deleted'); if (S.editingId === id) resetForm(); }
+        catch (err) { close(); toast(writeFailed(err)); }
+      };
+    });
+  }
+
+  /* ───────────── export ───────────── */
+  async function exportCsv() {
+    const { book, sorted } = ledger();
+    const q = (v) => `"${String(v ?? '').replace(/"/g, '""')}"`;
+    const rows = [['Date', 'Voucher', 'Type', 'Party', 'Ledger head', 'Mode', 'Taxable', 'GST %', 'GST', 'Receipt', 'Payment', 'Balance', 'Narration']];
+    rows.push(['', '', '', 'Opening balance', '', '', '', '', '', '', '', (book.opening / 100).toFixed(2), '']);
+    for (const e of sorted) rows.push([fmtDate(e.date), e.vch, e.type === 'R' ? 'Receipt' : 'Payment', e.party, e.head, e.mode,
+      (e.taxable / 100).toFixed(2), e.rate, (e.gst / 100).toFixed(2), e.type === 'R' ? (e.total / 100).toFixed(2) : '',
+      e.type === 'P' ? (e.total / 100).toFixed(2) : '', (e._bal / 100).toFixed(2), e.note]);
+    const csv = '﻿' + rows.map((r) => r.map(q).join(',')).join('\r\n');
+    const fname = book.name.replace(/[^\w\- ]+/g, '').trim().replace(/\s+/g, '-') + '-' + todayISO() + '.csv';
+    try { await S.downloads.save({ filename: fname, data: csv }); toast('CSV saved'); }
+    catch (err) { if (err?.code !== 'declined') toast('Export is not available here.'); }
+  }
+
+  /* ───────────── wiring ───────────── */
+  $('typeR').onclick = () => setType('R');
+  $('typeP').onclick = () => setType('P');
+  ['fAmt', 'fRate', 'fIncl'].forEach((id) => $(id).addEventListener('input', updateCalc));
+  $('fRate').addEventListener('change', updateCalc);
+  $('entryForm').addEventListener('submit', submitEntry);
+  $('cancelEdit').onclick = () => { resetForm(); $('formMsg').textContent = ''; };
+  $('newBookBtn').onclick = () => openBookModal(null);
+  $('editBookBtn').onclick = () => openBookModal(S.books.find((b) => b.id === S.bookId));
+  $('bookSelect').onchange = (e) => { S.bookId = e.target.value; S.q.month = ''; resetForm(); subscribeEntries(); render(); };
+  $('qMonth').onchange = (e) => { S.q.month = e.target.value; render(); };
+  $('qType').onchange = (e) => { S.q.type = e.target.value; render(); };
+  $('qMode').onchange = (e) => { S.q.mode = e.target.value; render(); };
+  let searchTimer;
+  $('qText').oninput = (e) => { clearTimeout(searchTimer); searchTimer = setTimeout(() => { S.q.text = e.target.value; render(); }, 150); };
+  $('registerBody').addEventListener('click', (e) => {
+    const ed = e.target.closest('[data-edit]'); if (ed) return startEdit(ed.dataset.edit);
+    const del = e.target.closest('[data-del]'); if (del) return confirmDelete(del.dataset.del);
+  });
+  $('exportBtn').onclick = exportCsv;
+
+  resetForm();
+  render();
+
+  /* ───────────── connect to shared storage ───────────── */
+  (async () => {
+    const use = window.claude && window.claude.use ? (n) => window.claude.use(n) : async () => null;
+    const [db, user, downloads] = await Promise.all([use('db'), use('user'), use('downloads')]);
+    S.user = user; S.downloads = downloads;
+    if (!db) {
+      showNotice('Not connected to shared storage, so entries made here are not saved. Open this page from its claude.ai link to keep your books.');
+      onBooks([]);
+      return;
+    }
+    S.db = db; S.live = true;
+    if (user) {
+      const canWrite = await user.can('data.write');
+      if (canWrite === false) setReadOnly(true);
+    }
+    db.collection('books').onSnapshot(
+      (snap) => onBooks(snap.docs.map((d) => ({ id: d.id, ...d.data() }))),
+      () => showNotice('Could not load the books. Reload the page to try again.')
+    );
+  })();
+})();
+</script>
