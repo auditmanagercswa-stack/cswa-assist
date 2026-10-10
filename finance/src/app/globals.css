@@ -1,0 +1,96 @@
+@import "tailwindcss";
+
+/*
+ * Design tokens — "private bank ledger".
+ * Every colour is a CSS variable so the dark theme is a token swap (html.dark).
+ */
+@custom-variant dark (&:where(.dark, .dark *));
+
+:root {
+  --cream: #f4efe6;          /* page background */
+  --card: #ffffff;
+  --hairline: #e8e1d4;
+  --forest: #0f2a22;         /* sidebar, hero card */
+  --forest-2: #183b30;
+  --gold: #b8873a;           /* accent */
+  --gold-soft: #f3e7d1;
+  --mint: #7fe0b0;           /* income / positive */
+  --mint-ink: #1f7a52;
+  --sand: #ede4d6;           /* muted panels */
+  --ink: #1d2420;
+  --ink-2: #5f6661;
+  --ink-3: #8b8f88;
+  --danger-bg: #fde7e7;
+  --danger: #c0392b;
+  --warn-bg: #fbf0d9;
+  --warn: #8a5a12;
+  --on-forest: #f4efe6;
+  --ring: #b8873a;
+  --shadow: 0 1px 2px rgba(15, 42, 34, 0.04), 0 8px 24px rgba(15, 42, 34, 0.06);
+}
+
+.dark {
+  --cream: #0e1512;
+  --card: #151f1b;
+  --hairline: #26342e;
+  --forest: #0a1d17;
+  --forest-2: #12302a;
+  --gold: #d3a65c;
+  --gold-soft: #2e2617;
+  --mint: #7fe0b0;
+  --mint-ink: #7fe0b0;
+  --sand: #1b2621;
+  --ink: #ece6da;
+  --ink-2: #b1aea4;
+  --ink-3: #868a83;
+  --danger-bg: #3a1c1a;
+  --danger: #f08a7e;
+  --warn-bg: #3a2e17;
+  --warn: #e9c27a;
+  --on-forest: #f4efe6;
+  --ring: #d3a65c;
+  --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 8px 24px rgba(0, 0, 0, 0.25);
+  color-scheme: dark;
+}
+
+@theme inline {
+  --color-cream: var(--cream);
+  --color-card: var(--card);
+  --color-hairline: var(--hairline);
+  --color-forest: var(--forest);
+  --color-forest-2: var(--forest-2);
+  --color-gold: var(--gold);
+  --color-gold-soft: var(--gold-soft);
+  --color-mint: var(--mint);
+  --color-mint-ink: var(--mint-ink);
+  --color-sand: var(--sand);
+  --color-ink: var(--ink);
+  --color-ink-2: var(--ink-2);
+  --color-ink-3: var(--ink-3);
+  --color-danger-bg: var(--danger-bg);
+  --color-danger: var(--danger);
+  --color-warn-bg: var(--warn-bg);
+  --color-warn: var(--warn);
+  --color-on-forest: var(--on-forest);
+  --font-sans: "Inter Variable", Inter, system-ui, sans-serif;
+  --font-serif: "Book Antiqua", "Palatino Linotype", Palatino, Georgia, serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+  --radius-card: 24px;
+  --shadow-card: var(--shadow);
+}
+
+html, body { background: var(--cream); color: var(--ink); }
+body { font-family: var(--font-sans); -webkit-font-smoothing: antialiased; }
+h1, h2, h3, .font-display { font-family: var(--font-serif); letter-spacing: -0.01em; text-wrap: balance; }
+.money { font-family: var(--font-mono); font-variant-numeric: tabular-nums; letter-spacing: -0.02em; }
+.num { font-variant-numeric: tabular-nums; }
+.smallcaps { font-size: 0.7rem; letter-spacing: 0.16em; text-transform: uppercase; }
+:focus-visible { outline: 2px solid var(--ring); outline-offset: 2px; border-radius: 6px; }
+* { transition-timing-function: ease; }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
+
+/* Loading skeleton shimmer */
+.skeleton { background: linear-gradient(90deg, var(--sand) 25%, var(--hairline) 50%, var(--sand) 75%); background-size: 200% 100%; animation: shimmer 1.4s infinite; border-radius: 10px; }
+@keyframes shimmer { to { background-position: -200% 0; } }
+
+@media print { aside, header, nav, .no-print { display: none !important; } body { background: #fff; } }
