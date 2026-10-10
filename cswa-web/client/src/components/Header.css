@@ -1,0 +1,130 @@
+.header {
+  position: fixed;
+  inset: 0 0 auto;
+  z-index: 50;
+  background: transparent;
+  transition: background var(--t-med), box-shadow var(--t-med), padding var(--t-med);
+  padding: 18px 0;
+}
+.header--scrolled {
+  /* Solid (no backdrop-filter) so the fixed mobile menu still covers the viewport. */
+  background: rgba(255, 255, 255, 0.97);
+  box-shadow: var(--shadow-sm);
+  padding: 10px 0;
+}
+.header__inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+/* ── Brand ── */
+.brand {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: var(--ink);
+}
+.brand__mark {
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  display: grid;
+  place-items: center;
+  background: linear-gradient(135deg, var(--primary), var(--primary-light));
+  color: #fff;
+  font-size: 1.35rem;
+  font-weight: 700;
+  box-shadow: var(--shadow-sm);
+}
+.brand__text {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.15;
+}
+.brand__text strong {
+  font-size: 1.25rem;
+  letter-spacing: 0.06em;
+}
+.brand__text small {
+  font-size: 0.72rem;
+  color: var(--ink-soft);
+  letter-spacing: 0.04em;
+}
+
+/* ── Desktop nav ── */
+.nav {
+  display: flex;
+  align-items: center;
+  gap: 28px;
+}
+.nav ul {
+  display: flex;
+  gap: 6px;
+  list-style: none;
+}
+.nav ul a {
+  position: relative;
+  display: block;
+  padding: 8px 14px;
+  color: var(--ink-soft);
+  border-radius: 999px;
+  transition: color var(--t-fast), background var(--t-fast);
+}
+.nav ul a:hover,
+.nav ul a.is-active {
+  color: var(--primary-dark);
+  background: var(--primary-tint);
+}
+.header__toggle {
+  display: none;
+}
+
+/* ── Mobile nav ── */
+@media (max-width: 860px) {
+  .header__toggle {
+    display: grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    background: var(--surface);
+    color: var(--ink);
+    cursor: pointer;
+    position: relative;
+    z-index: 2;
+  }
+  .nav {
+    position: fixed;
+    inset: 0;
+    flex-direction: column;
+    justify-content: center;
+    gap: 32px;
+    background: var(--surface);
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-12px);
+    transition: opacity var(--t-med), transform var(--t-med), visibility var(--t-med);
+  }
+  .nav--open {
+    opacity: 1;
+    visibility: visible;
+    transform: none;
+  }
+  .nav ul {
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+  }
+  .nav ul a {
+    font-size: 1.35rem;
+    padding: 10px 24px;
+  }
+  .brand__text small {
+    display: none;
+  }
+}
