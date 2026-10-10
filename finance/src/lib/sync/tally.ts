@@ -5,7 +5,6 @@ import { createAndPost } from "@/lib/accounting/post";
 import { assertCanWrite } from "@/lib/roles";
 import { createParty } from "@/lib/documents";
 import { validateLines } from "@/lib/accounting/core";
-import type { Ctx } from "@/lib/session";
 import type { ImportSummary, SyncAdapter } from "./types";
 import { buildTallyXml, parseTallyXml } from "./tally-xml";
 

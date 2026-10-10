@@ -29,8 +29,8 @@ export function DuePanel({ dues, hasTan }: { dues: HomeData["dues"]; hasTan: boo
               <span className="money text-xl leading-none text-ink">{d.dueOn.getUTCDate()}</span>
             </div>
             <div className="min-w-0 flex-1">
-              <p className="truncate text-sm font-semibold text-ink">{d.title}</p>
-              <p className="truncate text-xs text-ink-2">
+              <p className="line-clamp-2 text-sm font-semibold leading-snug text-ink">{d.title}</p>
+              <p className="line-clamp-2 text-xs text-ink-2">
                 {d.extra ? d.extra.replace(/(\d+)$/, (m) => inr(Number(m))) : d.subtitle}
               </p>
             </div>

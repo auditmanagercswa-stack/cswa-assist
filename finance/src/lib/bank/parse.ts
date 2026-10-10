@@ -6,7 +6,8 @@
 export interface StatementRow { date: string; description: string; reference: string | null; amountPaise: number; balancePaise: number | null }
 
 const norm = (h: string) => h.toLowerCase().replace(/[^a-z]/g, "");
-const pickCol = (headers: string[], names: string[]) => headers.findIndex((h) => names.some((n) => norm(h) === n || norm(h).startsWith(n)));
+/** Short names ("dr", "cr", "amt") must match exactly so "Dr/Cr" isn't mistaken for a Debit column. */
+const pickCol = (headers: string[], names: string[]) => headers.findIndex((h) => names.some((n) => norm(h) === n || (n.length > 3 && norm(h).startsWith(n))));
 
 export function detectColumns(headers: string[]) {
   return {

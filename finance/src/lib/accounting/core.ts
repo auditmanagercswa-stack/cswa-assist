@@ -22,7 +22,10 @@ export function validateLines(lines: Line[]): string[] {
 
 export function totals(lines: Line[]) {
   let dr = 0, cr = 0;
-  for (const l of lines) (l.side === "DR" ? (dr += l.amountPaise) : (cr += l.amountPaise));
+  for (const l of lines) {
+    if (l.side === "DR") dr += l.amountPaise;
+    else cr += l.amountPaise;
+  }
   return { dr, cr };
 }
 
