@@ -13,20 +13,20 @@ export async function reportToXlsx(doc: ReportDoc): Promise<Buffer> {
   const ws = wb.addWorksheet(doc.title.slice(0, 31).replace(/[\\/?*[\]:]/g, "-"), { pageSetup: { paperSize: 9, orientation: "landscape", fitToPage: true, fitToWidth: 1, fitToHeight: 0 } });
   ws.headerFooter.oddFooter = `&L${doc.company}&RPage &P of &N`;
   const width = Math.max(...doc.sections.map((s) => s.columns.length));
-  const title = ws.addRow([doc.title]); title.font = { name: "Book Antiqua", size: 16, bold: true, color: { argb: "FF0F2A22" } };
-  const sub = ws.addRow([`${doc.company} · ${doc.period}`]); sub.font = { name: "Book Antiqua", size: 11, italic: true, color: { argb: "FFB8873A" } };
+  const title = ws.addRow([doc.title]); title.font = { name: "Book Antiqua", size: 16, bold: true, color: { argb: "FF1F3A93" } };
+  const sub = ws.addRow([`${doc.company} · ${doc.period}`]); sub.font = { name: "Book Antiqua", size: 11, italic: true, color: { argb: "FF2563EB" } };
   ws.addRow([]);
   for (const k of doc.kpis ?? []) { const r = ws.addRow([k.label, k.value / 100]); r.getCell(2).numFmt = INR_FORMAT; r.font = { name: "Book Antiqua" }; }
   if (doc.kpis?.length) ws.addRow([]);
   for (const sec of doc.sections) {
-    if (sec.heading) { const h = ws.addRow([sec.heading]); h.font = { name: "Book Antiqua", size: 12, bold: true, color: { argb: "FF0F2A22" } }; }
+    if (sec.heading) { const h = ws.addRow([sec.heading]); h.font = { name: "Book Antiqua", size: 12, bold: true, color: { argb: "FF1F3A93" } }; }
     const head = ws.addRow(sec.columns.map((c) => c.label));
-    head.eachCell((c) => { c.font = { name: "Book Antiqua", bold: true }; c.fill = { type: "pattern", pattern: "solid", fgColor: { argb: "FFEDE4D6" } }; c.border = { bottom: { style: "thin", color: { argb: "FFB8873A" } } }; });
+    head.eachCell((c) => { c.font = { name: "Book Antiqua", bold: true }; c.fill = { type: "pattern", pattern: "solid", fgColor: { argb: "FFE8F0FE" } }; c.border = { bottom: { style: "thin", color: { argb: "FF2563EB" } } }; });
     for (const r of sec.rows) {
       const row = ws.addRow(r.cells.map(value));
-      row.font = { name: "Book Antiqua", bold: r.tone === "total" || r.tone === "subtotal" || r.tone === "heading", color: { argb: r.tone === "muted" ? "FF8B8F88" : "FF1D2420" } };
+      row.font = { name: "Book Antiqua", bold: r.tone === "total" || r.tone === "subtotal" || r.tone === "heading", color: { argb: r.tone === "muted" ? "FF8B8F88" : "FF0F1B33" } };
       sec.columns.forEach((c, i) => { if (c.money) { row.getCell(i + 1).numFmt = INR_FORMAT; row.getCell(i + 1).alignment = { horizontal: "right" }; } });
-      if (r.tone === "total") row.eachCell((c) => { c.fill = { type: "pattern", pattern: "solid", fgColor: { argb: "FFF4EFE6" } }; c.border = { top: { style: "thin", color: { argb: "FFB8873A" } } }; });
+      if (r.tone === "total") row.eachCell((c) => { c.fill = { type: "pattern", pattern: "solid", fgColor: { argb: "FFF5F8FF" } }; c.border = { top: { style: "thin", color: { argb: "FF2563EB" } } }; });
     }
     ws.addRow([]);
   }

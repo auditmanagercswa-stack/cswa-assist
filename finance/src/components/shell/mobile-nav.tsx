@@ -17,7 +17,7 @@ export function MobileNav() {
       <nav className="fixed inset-x-0 bottom-0 z-40 grid grid-cols-5 border-t border-white/10 bg-forest pb-[env(safe-area-inset-bottom)] text-on-forest md:hidden" aria-label="Main">
         {tabs.map(({ href, label, icon: Icon }) => (
           <Link key={href} href={href} aria-current={active === href ? "page" : undefined}
-            className={cn("flex flex-col items-center gap-0.5 py-2 text-[11px]", active === href ? "text-gold" : "text-on-forest/70")}>
+            className={cn("flex flex-col items-center gap-0.5 py-2 text-[11px]", active === href ? "text-gold-light" : "text-on-forest/70")}>
             <Icon className="size-5" strokeWidth={1.7} />{label}
           </Link>
         ))}

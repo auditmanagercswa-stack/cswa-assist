@@ -6,50 +6,57 @@
  */
 @custom-variant dark (&:where(.dark, .dark *));
 
+/*
+ * Theme: clean white & blue.
+ * Token names are historical ("forest" = sidebar/hero navy, "gold" = accent blue,
+ * "mint" = positive green, "sand" = pale-blue panels) so components don't change.
+ */
 :root {
-  --cream: #f4efe6;          /* page background */
+  --cream: #ffffff;          /* page background */
   --card: #ffffff;
-  --hairline: #e8e1d4;
-  --forest: #0f2a22;         /* sidebar, hero card */
-  --forest-2: #183b30;
-  --gold: #b8873a;           /* accent */
-  --gold-soft: #f3e7d1;
-  --mint: #7fe0b0;           /* income / positive */
-  --mint-ink: #1f7a52;
-  --sand: #ede4d6;           /* muted panels */
-  --ink: #1d2420;
-  --ink-2: #5f6661;
-  --ink-3: #8b8f88;
-  --danger-bg: #fde7e7;
+  --hairline: #e3e8f2;
+  --forest: #1f3a93;         /* royal blue: sidebar, hero card */
+  --forest-2: #2a4aad;
+  --gold: #2563eb;           /* accent blue (AA on white) */
+  --gold-light: #93c5fd;     /* accent on royal-blue surfaces */
+  --gold-soft: #e8f0fe;
+  --mint: #22c55e;           /* income / positive */
+  --mint-ink: #15803d;
+  --sand: #f5f8ff;           /* pale-blue panels */
+  --ink: #0f1b33;
+  --ink-2: #4b5876;
+  --ink-3: #8090ad;
+  --danger-bg: #fdecec;
   --danger: #c0392b;
-  --warn-bg: #fbf0d9;
+  --warn-bg: #fff6e0;
   --warn: #8a5a12;
-  --on-forest: #f4efe6;
-  --ring: #b8873a;
-  --shadow: 0 1px 2px rgba(15, 42, 34, 0.04), 0 8px 24px rgba(15, 42, 34, 0.06);
+  --on-forest: #ffffff;
+  --ring: #3b82f6;
+  --shadow: 0 1px 2px rgba(15, 27, 51, 0.04), 0 10px 28px rgba(31, 58, 147, 0.08);
 }
 
 .dark {
-  --cream: #0e1512;
-  --card: #151f1b;
-  --hairline: #26342e;
-  --forest: #0a1d17;
-  --forest-2: #12302a;
-  --gold: #d3a65c;
-  --gold-soft: #2e2617;
-  --mint: #7fe0b0;
-  --mint-ink: #7fe0b0;
-  --sand: #1b2621;
-  --ink: #ece6da;
-  --ink-2: #b1aea4;
-  --ink-3: #868a83;
-  --danger-bg: #3a1c1a;
-  --danger: #f08a7e;
+  --cream: #0b1220;
+  --card: #111a2e;
+  --hairline: #22304d;
+  --forest: #0d1b45;
+  --forest-2: #16296a;
+  --gold: #60a5fa;
+  --gold-light: #93c5fd;
+  --gold-soft: #172554;
+  --mint: #22c55e;
+  --mint-ink: #4ade80;
+  --sand: #131d33;
+  --ink: #e6ecf7;
+  --ink-2: #a7b3c9;
+  --ink-3: #7c89a3;
+  --danger-bg: #3a1c1f;
+  --danger: #f28b82;
   --warn-bg: #3a2e17;
   --warn: #e9c27a;
-  --on-forest: #f4efe6;
-  --ring: #d3a65c;
-  --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 8px 24px rgba(0, 0, 0, 0.25);
+  --on-forest: #ffffff;
+  --ring: #60a5fa;
+  --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 10px 28px rgba(0, 0, 0, 0.3);
   color-scheme: dark;
 }
 
@@ -61,6 +68,7 @@
   --color-forest-2: var(--forest-2);
   --color-gold: var(--gold);
   --color-gold-soft: var(--gold-soft);
+  --color-gold-light: var(--gold-light);
   --color-mint: var(--mint);
   --color-mint-ink: var(--mint-ink);
   --color-sand: var(--sand);

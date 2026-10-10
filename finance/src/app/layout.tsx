@@ -10,7 +10,7 @@ export const metadata: Metadata = {
   title: { default: "Books", template: "%s · Books" },
   description: "Chat in. Books out. Chat-first accounting and GST compliance for Indian businesses.",
 };
-export const viewport: Viewport = { themeColor: "#0F2A22" };
+export const viewport: Viewport = { themeColor: "#1F3A93" };
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
   const theme = (await cookies()).get("theme")?.value === "dark" ? "dark" : "";

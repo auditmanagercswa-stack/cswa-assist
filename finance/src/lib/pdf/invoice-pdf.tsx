@@ -18,16 +18,16 @@ export interface InvoicePdfData {
 export function InvoicePdf({ d }: { d: InvoicePdfData }) {
   const H = headingFont();
   const s = StyleSheet.create({
-    page: { padding: 36, fontSize: 9, fontFamily: "Helvetica", color: "#1d2420" },
-    band: { backgroundColor: "#0F2A22", color: "#F4EFE6", padding: 16, borderRadius: 8, flexDirection: "row", justifyContent: "space-between" },
-    h1: { fontFamily: H, fontSize: 20, color: "#B8873A" },
+    page: { padding: 36, fontSize: 9, fontFamily: "Helvetica", color: "#0F1B33" },
+    band: { backgroundColor: "#1F3A93", color: "#FFFFFF", padding: 16, borderRadius: 8, flexDirection: "row", justifyContent: "space-between" },
+    h1: { fontFamily: H, fontSize: 20, color: "#93C5FD" },
     co: { fontFamily: H, fontSize: 14 },
     muted: { color: "#5f6661" },
     row: { flexDirection: "row" },
-    th: { backgroundColor: "#EDE4D6", padding: 5, fontFamily: "Helvetica-Bold", fontSize: 8 },
-    td: { padding: 5, borderBottomWidth: 0.5, borderBottomColor: "#E8E1D4" },
+    th: { backgroundColor: "#E8F0FE", padding: 5, fontFamily: "Helvetica-Bold", fontSize: 8 },
+    td: { padding: 5, borderBottomWidth: 0.5, borderBottomColor: "#E3E8F2" },
     right: { textAlign: "right" },
-    box: { borderWidth: 0.5, borderColor: "#E8E1D4", borderRadius: 6, padding: 10, flex: 1 },
+    box: { borderWidth: 0.5, borderColor: "#E3E8F2", borderRadius: 6, padding: 10, flex: 1 },
     footer: { position: "absolute", bottom: 20, left: 36, right: 36, flexDirection: "row", justifyContent: "space-between", fontSize: 7, color: "#8b8f88" },
   });
   const cols = [{ w: "34%", k: "Description" }, { w: "11%", k: "HSN/SAC" }, { w: "9%", k: "Qty" }, { w: "14%", k: "Rate" }, { w: "10%", k: "GST" }, { w: "22%", k: "Taxable value" }];
@@ -94,7 +94,7 @@ export function InvoicePdf({ d }: { d: InvoicePdfData }) {
             {[["Taxable value", d.invoice.taxable], ...(d.invoice.interState ? [["IGST", d.invoice.igst]] : [["CGST", d.invoice.cgst], ["SGST", d.invoice.sgst]]), ...(d.invoice.roundOff ? [["Round off", d.invoice.roundOff]] : [])].map(([k, v]) => (
               <View key={k as string} style={[s.row, { justifyContent: "space-between", paddingVertical: 2 }]}><Text style={s.muted}>{k}</Text><Text>{rs(v as number)}</Text></View>
             ))}
-            <View style={[s.row, { justifyContent: "space-between", borderTopWidth: 1, borderTopColor: "#B8873A", marginTop: 4, paddingTop: 5 }]}>
+            <View style={[s.row, { justifyContent: "space-between", borderTopWidth: 1, borderTopColor: "#2563EB", marginTop: 4, paddingTop: 5 }]}>
               <Text style={{ fontFamily: H, fontSize: 12 }}>Total</Text><Text style={{ fontFamily: "Helvetica-Bold", fontSize: 12 }}>{rs(d.invoice.total)}</Text>
             </View>
             {d.invoice.paid > 0 && <View style={[s.row, { justifyContent: "space-between" }]}><Text style={s.muted}>Balance due</Text><Text>{rs(d.invoice.total - d.invoice.paid)}</Text></View>}

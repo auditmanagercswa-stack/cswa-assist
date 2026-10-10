@@ -17,7 +17,7 @@ export default async function LoginPage({ searchParams }: { searchParams: Promis
     <main className="grid min-h-dvh place-items-center bg-cream px-4 py-10">
       <div className="w-full max-w-md">
         <div className="mb-8 text-center">
-          <div className="mx-auto mb-4 grid size-14 place-items-center rounded-2xl bg-forest font-display text-2xl text-gold">₹</div>
+          <div className="mx-auto mb-4 grid size-14 place-items-center rounded-2xl bg-forest font-display text-2xl text-gold-light">₹</div>
           <h1 className="text-4xl text-ink">Chat in. <em className="text-gold">Books</em> out.</h1>
           <p className="mt-2 text-sm text-ink-2">Tell us what happened in the business. We draft the entries, keep GST and TDS dates in view.</p>
         </div>

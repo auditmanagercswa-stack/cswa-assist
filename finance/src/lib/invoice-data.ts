@@ -11,7 +11,7 @@ export async function invoiceData(companyId: string, id: string) {
   if (!inv) return null;
   const outstanding = n(inv.totalPaise) - n(inv.paidPaise);
   const upi = inv.company.upiId && outstanding > 0 ? upiLink(inv.company.upiId, inv.company.name, outstanding, `Invoice ${inv.number}`) : null;
-  const qrDataUrl = upi ? await QRCode.toDataURL(upi, { margin: 1, width: 240, color: { dark: "#0F2A22", light: "#FFFFFF" } }) : null;
+  const qrDataUrl = upi ? await QRCode.toDataURL(upi, { margin: 1, width: 240, color: { dark: "#1F3A93", light: "#FFFFFF" } }) : null;
   const pdf: InvoicePdfData = {
     company: { name: inv.company.name, gstin: inv.company.gstin, pan: inv.company.pan, address: inv.company.address, email: inv.company.email, phone: inv.company.phone, stateCode: inv.company.stateCode, upiId: inv.company.upiId },
     party: { name: inv.party.name, gstin: inv.party.gstin, address: inv.party.address, stateCode: inv.party.stateCode },

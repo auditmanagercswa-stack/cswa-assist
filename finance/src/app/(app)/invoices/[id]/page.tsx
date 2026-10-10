@@ -43,7 +43,7 @@ export default async function InvoicePage({ params }: { params: Promise<{ id: st
             <p className="mt-1 text-sm text-on-forest/70">{ctx.company.gstin ? `GSTIN ${ctx.company.gstin}` : "Not GST registered"}</p>
           </div>
           <div className="text-right">
-            <p className="font-display text-3xl italic text-gold">Tax Invoice</p>
+            <p className="font-display text-3xl italic text-gold-light">Tax Invoice</p>
             <p className="mt-1 text-sm">Date {fmtDate(inv.date)} · Due {fmtDate(inv.dueDate)}</p>
           </div>
         </div>

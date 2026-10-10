@@ -34,7 +34,7 @@ export default async function FirmPage() {
           return (
             <Card key={m.companyId} className={"grid gap-3 p-5 " + (m.companyId === ctx.company.id ? "ring-2 ring-gold" : "")}>
               <div className="flex items-start justify-between gap-3">
-                <div className="flex items-center gap-3"><span className="grid size-10 place-items-center rounded-2xl bg-forest text-gold"><Building2 className="size-5" /></span>
+                <div className="flex items-center gap-3"><span className="grid size-10 place-items-center rounded-2xl bg-forest text-gold-light"><Building2 className="size-5" /></span>
                   <div><p className="font-display text-lg">{m.company.name}</p><p className="text-xs text-ink-3">{m.company.gstin ?? "No GSTIN"} · {m.role.toLowerCase()}</p></div></div>
                 <Chip tone={h.score >= 80 ? "mint" : h.score >= 60 ? "warn" : "danger"}>Health {h.score}</Chip>
               </div>
