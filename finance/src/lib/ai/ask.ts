@@ -54,6 +54,7 @@ async function askRules(ctx: Ctx, question: string): Promise<AskAnswer> {
   const say = (r: ToolResult, text: string): AskAnswer => ({ answer: text, chart: r.chart, link: r.link, engine: "rules" });
   const s = (r: ToolResult) => r.summary as Record<string, string & unknown>;
 
+  if (/gst|itc|input credit/.test(q)) { const r = await runTool(ctx.company.id, "gst_position", range); return say(r, `For ${p.label}: output GST ${s(r).outputTax}, input credit ${s(r).inputCredit}, net payable ${s(r).netPayable}.`); }
   if (/owes? me|debtor|receivable|who hasn'?t paid|outstanding from/.test(q)) {
     const r = await runTool(ctx.company.id, "top_debtors", { limit: 5 });
     const c = (s(r).customers as unknown as { name: string; outstanding: string }[]) ?? [];
@@ -64,7 +65,6 @@ async function askRules(ctx: Ctx, question: string): Promise<AskAnswer> {
     const v = (s(r).vendors as unknown as { name: string; outstanding: string }[]) ?? [];
     return say(r, v.length ? `You owe ${v[0].name} the most: ${v[0].outstanding}.` : "You don't owe any vendor right now.");
   }
-  if (/gst|itc|input credit/.test(q)) { const r = await runTool(ctx.company.id, "gst_position", range); return say(r, `For ${p.label}: output GST ${s(r).outputTax}, input credit ${s(r).inputCredit}, net payable ${s(r).netPayable}.`); }
   if (/profit|loss|margin|how (am i|are we) doing/.test(q)) { const r = await runTool(ctx.company.id, "profit", range); return say(r, `For ${p.label}: income ${s(r).income}, spent ${s(r).expenses}, net profit ${s(r).netProfit} (${s(r).marginPct}% margin).`); }
   if (/cash|bank balance|balance in|how much money/.test(q)) { const r = await runTool(ctx.company.id, "cash_position", {}); const a = s(r).accounts as unknown as { name: string; balance: string }[]; return say(r, `Balances today: ${a.map((x) => `${x.name} ${x.balance}`).join(", ")}.`); }
   if (/income|sales|revenue|earn/.test(q)) { const r = await runTool(ctx.company.id, "income", range); return say(r, `Income for ${p.label}: ${s(r).income}.`); }
