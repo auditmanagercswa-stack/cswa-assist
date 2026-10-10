@@ -170,8 +170,9 @@ textarea:focus {
 }
 
 /* ── Scroll reveal (see components/Reveal.jsx) ── */
+/* Starts partly visible so content is readable even before it animates. */
 .reveal {
-  opacity: 0;
+  opacity: 0.35;
   transform: translateY(26px);
   transition: opacity 0.7s ease, transform 0.7s ease;
 }
