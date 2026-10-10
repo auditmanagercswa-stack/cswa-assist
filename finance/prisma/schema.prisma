@@ -1,0 +1,507 @@
+// Chat-first accounting — data model.
+// Money is stored as BigInt paise. Accounting dates are stored at UTC midnight.
+// Every business table carries companyId; all queries are scoped through src/lib/session.ts.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ───────────── Auth.js ─────────────
+
+model User {
+  id            String       @id @default(cuid())
+  name          String?
+  email         String?      @unique
+  emailVerified DateTime?
+  image         String?
+  createdAt     DateTime     @default(now())
+  accounts      Account[]
+  sessions      Session[]
+  memberships   Membership[]
+  auditLogs     AuditLog[]
+}
+
+model Account {
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([provider, providerAccountId])
+}
+
+model Session {
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
+  identifier String
+  token      String
+  expires    DateTime
+
+  @@id([identifier, token])
+}
+
+// ───────────── Tenancy ─────────────
+
+enum LegalType {
+  PROPRIETORSHIP
+  PARTNERSHIP
+  LLP
+  PRIVATE_LIMITED
+}
+
+enum Role {
+  OWNER
+  ACCOUNTANT
+  AUDITOR
+}
+
+model Company {
+  id              String    @id @default(cuid())
+  name            String
+  legalType       LegalType @default(PROPRIETORSHIP)
+  gstin           String?
+  pan             String?
+  tan             String?
+  stateCode       String    @default("27") // GST state code of principal place of business
+  address         String?
+  email           String?
+  phone           String?
+  upiId           String?
+  logoUrl         String?
+  invoiceTerms    String?
+  booksLockedUpto DateTime? // FY lock: nothing on/before this date can be posted or reversed
+  lastSyncAt      DateTime?
+  lastSyncSource  String?
+  /// Optional compliance switches: "pf" (PF/ESI), "pt" (professional tax)
+  flags           String[]  @default([])
+  createdAt       DateTime  @default(now())
+
+  memberships Membership[]
+  groups      LedgerGroup[]
+  ledgers     Ledger[]
+  parties     Party[]
+  vouchers    Voucher[]
+  invoices    Invoice[]
+  bills       Bill[]
+  bankTxns    BankTxn[]
+  dueDates    DueDate[]
+  auditLogs   AuditLog[]
+  hints       MappingHint[]
+  series      NumberSeries[]
+}
+
+model Membership {
+  id        String   @id @default(cuid())
+  userId    String
+  companyId String
+  role      Role     @default(OWNER)
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  company   Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, companyId])
+}
+
+// ───────────── Chart of accounts (Tally-style groups) ─────────────
+
+enum Nature {
+  ASSET
+  LIABILITY
+  INCOME
+  EXPENSE
+}
+
+model LedgerGroup {
+  id        String        @id @default(cuid())
+  companyId String
+  name      String
+  nature    Nature
+  parentId  String?
+  /// Schedule III line this group rolls into (e.g. "Trade receivables")
+  schedule3 String?
+  /// Affects gross profit (Tally "Direct" groups, Sales, Purchases)
+  isDirect  Boolean       @default(false)
+  sortOrder Int           @default(0)
+  company   Company       @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  parent    LedgerGroup?  @relation("GroupTree", fields: [parentId], references: [id])
+  children  LedgerGroup[] @relation("GroupTree")
+  ledgers   Ledger[]
+
+  @@unique([companyId, name])
+}
+
+enum LedgerKind {
+  GENERAL
+  CASH
+  BANK
+  PARTY
+  TAX
+  ROUND_OFF
+  SUSPENSE
+}
+
+model Ledger {
+  id            String        @id @default(cuid())
+  companyId     String
+  groupId       String
+  name          String
+  kind          LedgerKind    @default(GENERAL)
+  /// For TAX ledgers: CGST_IN, SGST_IN, IGST_IN, CGST_OUT, SGST_OUT, IGST_OUT, TDS_PAYABLE, TDS_RECEIVABLE, RCM_PAYABLE
+  taxHead       String?
+  /// Opening balance in paise; positive = debit, negative = credit
+  openingPaise  BigInt        @default(0)
+  /// Masked/last digits only for bank ledgers
+  bankAccountNo String?
+  ifsc          String?
+  aliases       String[]      @default([])
+  isActive      Boolean       @default(true)
+  createdAt     DateTime      @default(now())
+  company       Company       @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  group         LedgerGroup   @relation(fields: [groupId], references: [id])
+  lines         VoucherLine[]
+  party         Party?
+  bankTxns      BankTxn[]
+  hints         MappingHint[]
+  billExpenses  Bill[]        @relation("BillExpense")
+
+  @@unique([companyId, name])
+  @@index([companyId, kind])
+}
+
+// ───────────── Parties ─────────────
+
+enum PartyKind {
+  CUSTOMER
+  VENDOR
+  BOTH
+}
+
+model Party {
+  id         String    @id @default(cuid())
+  companyId  String
+  ledgerId   String    @unique
+  name       String
+  kind       PartyKind @default(CUSTOMER)
+  gstin      String?
+  pan        String?
+  stateCode  String?
+  email      String?
+  phone      String?
+  address    String?
+  creditDays Int       @default(30)
+  /// Default TDS section for payments to this vendor (e.g. 194C, 194J)
+  tdsSection String?
+  createdAt  DateTime  @default(now())
+  company    Company   @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  ledger     Ledger    @relation(fields: [ledgerId], references: [id])
+  vouchers   Voucher[]
+  invoices   Invoice[]
+  bills      Bill[]
+
+  @@unique([companyId, name])
+}
+
+// ───────────── Vouchers (immutable once posted) ─────────────
+
+enum VoucherType {
+  PAYMENT
+  RECEIPT
+  JOURNAL
+  SALES
+  PURCHASE
+  CONTRA
+  CREDIT_NOTE
+  DEBIT_NOTE
+}
+
+enum VoucherStatus {
+  DRAFT
+  POSTED
+  REVERSED
+}
+
+enum VoucherSource {
+  CHAT
+  OCR
+  MANUAL
+  INVOICE
+  BILL
+  BANK
+  TALLY
+  SEED
+}
+
+enum Side {
+  DR
+  CR
+}
+
+model Voucher {
+  id            String        @id @default(cuid())
+  companyId     String
+  number        String? // assigned on posting from NumberSeries
+  type          VoucherType
+  status        VoucherStatus @default(DRAFT)
+  date          DateTime      @db.Date
+  narration     String?
+  partyId       String?
+  source        VoucherSource @default(MANUAL)
+  reverseCharge Boolean       @default(false)
+  /// AI provenance: original sentence, confidence, model raw draft
+  aiInput       String?
+  aiConfidence  Float?
+  aiDraft       Json?
+  /// e.g. { section: "194C", rate: 2, amountPaise: 1000 }
+  tds           Json?
+  reversalOfId  String?       @unique
+  createdById   String?
+  postedById    String?
+  postedAt      DateTime?
+  createdAt     DateTime      @default(now())
+  company       Company       @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  party         Party?        @relation(fields: [partyId], references: [id])
+  lines         VoucherLine[]
+  reversalOf    Voucher?      @relation("Reversal", fields: [reversalOfId], references: [id])
+  reversedBy    Voucher?      @relation("Reversal")
+  invoice       Invoice?
+  bill          Bill?
+  bankTxns      BankTxn[]
+  allocations   Allocation[]
+
+  @@index([companyId, date])
+  @@index([companyId, status])
+}
+
+model VoucherLine {
+  id          String  @id @default(cuid())
+  voucherId   String
+  ledgerId    String
+  side        Side
+  amountPaise BigInt
+  /// GST metadata for tax lines and taxable lines: { rate, hsn, taxable }
+  gst         Json?
+  sortOrder   Int     @default(0)
+  voucher     Voucher @relation(fields: [voucherId], references: [id], onDelete: Cascade)
+  ledger      Ledger  @relation(fields: [ledgerId], references: [id])
+
+  @@index([ledgerId])
+}
+
+model NumberSeries {
+  id        String  @id @default(cuid())
+  companyId String
+  fy        Int
+  key       String // voucher type or "INVOICE"
+  prefix    String
+  next      Int     @default(1)
+  company   Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
+  @@unique([companyId, fy, key])
+}
+
+// ───────────── Sales invoices & purchase bills ─────────────
+
+enum DocStatus {
+  DRAFT
+  ISSUED
+  PARTIAL
+  PAID
+  CANCELLED
+}
+
+model Invoice {
+  id            String        @id @default(cuid())
+  companyId     String
+  partyId       String
+  voucherId     String?       @unique
+  number        String
+  fy            Int
+  date          DateTime      @db.Date
+  dueDate       DateTime      @db.Date
+  placeOfSupply String // state code
+  interState    Boolean
+  taxablePaise  BigInt
+  cgstPaise     BigInt        @default(0)
+  sgstPaise     BigInt        @default(0)
+  igstPaise     BigInt        @default(0)
+  roundOffPaise BigInt        @default(0)
+  totalPaise    BigInt
+  paidPaise     BigInt        @default(0)
+  status        DocStatus     @default(ISSUED)
+  notes         String?
+  /// e-invoice placeholders (IRP integration not implemented)
+  irn           String?
+  ackNo         String?
+  createdAt     DateTime      @default(now())
+  company       Company       @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  party         Party         @relation(fields: [partyId], references: [id])
+  voucher       Voucher?      @relation(fields: [voucherId], references: [id])
+  items         InvoiceItem[]
+  allocations   Allocation[]
+
+  @@unique([companyId, number])
+}
+
+model InvoiceItem {
+  id           String  @id @default(cuid())
+  invoiceId    String
+  description  String
+  hsn          String?
+  qty          Float   @default(1)
+  unit         String  @default("Nos")
+  ratePaise    BigInt
+  gstRate      Float   @default(18)
+  taxablePaise BigInt
+  invoice      Invoice @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+}
+
+model Bill {
+  id              String       @id @default(cuid())
+  companyId       String
+  partyId         String
+  voucherId       String?      @unique
+  vendorBillNo    String
+  date            DateTime     @db.Date
+  dueDate         DateTime     @db.Date
+  expenseLedgerId String
+  description     String?
+  hsn             String?
+  interState      Boolean      @default(false)
+  gstRate         Float        @default(0)
+  taxablePaise    BigInt
+  cgstPaise       BigInt       @default(0)
+  sgstPaise       BigInt       @default(0)
+  igstPaise       BigInt       @default(0)
+  reverseCharge   Boolean      @default(false)
+  tdsSection      String?
+  tdsRate         Float?
+  tdsPaise        BigInt       @default(0)
+  totalPaise      BigInt // gross bill value
+  payablePaise    BigInt // total less TDS
+  paidPaise       BigInt       @default(0)
+  status          DocStatus    @default(ISSUED)
+  scheduledOn     DateTime?    @db.Date
+  attachmentName  String?
+  createdAt       DateTime     @default(now())
+  company         Company      @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  party           Party        @relation(fields: [partyId], references: [id])
+  voucher         Voucher?     @relation(fields: [voucherId], references: [id])
+  expenseLedger   Ledger       @relation("BillExpense", fields: [expenseLedgerId], references: [id])
+  allocations     Allocation[]
+
+  @@unique([companyId, partyId, vendorBillNo])
+}
+
+/// Links a receipt/payment voucher to the invoice or bill it settles.
+model Allocation {
+  id          String   @id @default(cuid())
+  voucherId   String
+  invoiceId   String?
+  billId      String?
+  amountPaise BigInt
+  voucher     Voucher  @relation(fields: [voucherId], references: [id], onDelete: Cascade)
+  invoice     Invoice? @relation(fields: [invoiceId], references: [id])
+  bill        Bill?    @relation(fields: [billId], references: [id])
+}
+
+// ───────────── Banking ─────────────
+
+enum BankTxnStatus {
+  UNMATCHED
+  MATCHED
+  IGNORED
+}
+
+model BankTxn {
+  id           String        @id @default(cuid())
+  companyId    String
+  ledgerId     String
+  date         DateTime      @db.Date
+  description  String
+  reference    String?
+  /// Signed from the bank's view of our account: + deposit (credit in statement), − withdrawal
+  amountPaise  BigInt
+  balancePaise BigInt?
+  status       BankTxnStatus @default(UNMATCHED)
+  voucherId    String?
+  importBatch  String
+  createdAt    DateTime      @default(now())
+  company      Company       @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  ledger       Ledger        @relation(fields: [ledgerId], references: [id])
+  voucher      Voucher?      @relation(fields: [voucherId], references: [id])
+
+  @@index([companyId, ledgerId, status])
+}
+
+// ───────────── Compliance ─────────────
+
+enum DueStatus {
+  PENDING
+  FILED
+}
+
+model DueDate {
+  id        String    @id @default(cuid())
+  companyId String
+  code      String // matches src/config/compliance-calendar.ts
+  period    String // e.g. "2026-09" or "2026-Q2"
+  title     String
+  subtitle  String?
+  dueOn     DateTime  @db.Date
+  status    DueStatus @default(PENDING)
+  filedAt   DateTime?
+  company   Company   @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
+  @@unique([companyId, code, period])
+  @@index([companyId, dueOn])
+}
+
+// ───────────── Audit & learning ─────────────
+
+model AuditLog {
+  id        String   @id @default(cuid())
+  companyId String
+  userId    String?
+  action    String // voucher.post, voucher.reverse, invoice.create, ...
+  entity    String
+  entityId  String
+  before    Json?
+  after     Json?
+  at        DateTime @default(now())
+  company   Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  user      User?    @relation(fields: [userId], references: [id])
+
+  @@index([companyId, at])
+}
+
+/// Learned from user corrections: when a phrase appears, prefer this ledger.
+model MappingHint {
+  id        String   @id @default(cuid())
+  companyId String
+  keyword   String
+  ledgerId  String
+  uses      Int      @default(1)
+  updatedAt DateTime @updatedAt
+  company   Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  ledger    Ledger   @relation(fields: [ledgerId], references: [id], onDelete: Cascade)
+
+  @@unique([companyId, keyword, ledgerId])
+}
