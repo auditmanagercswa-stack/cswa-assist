@@ -12,8 +12,9 @@ import { AskPanel } from "@/components/ask/ask-panel";
 
 export const metadata = { title: "Home" };
 
-export default async function HomePage() {
+export default async function HomePage({ searchParams }: { searchParams: Promise<{ draft?: string }> }) {
   const ctx = await getCtx();
+  const { draft } = await searchParams;
   const [d, ledgers] = await Promise.all([
     homeData(ctx),
     db.ledger.findMany({ where: { companyId: ctx.company.id, isActive: true }, include: { group: true }, orderBy: { name: "asc" } }),
@@ -23,7 +24,7 @@ export default async function HomePage() {
   return (
     <div className="mx-auto grid max-w-[1400px] gap-6 xl:grid-cols-[minmax(0,1.7fr)_minmax(280px,0.9fr)_minmax(280px,0.9fr)] lg:grid-cols-[minmax(0,1.6fr)_minmax(280px,1fr)]">
       <div className="min-w-0 lg:row-span-2 xl:row-span-1">
-        <RecordCard d={d} ledgers={options} canWrite={ctx.role !== "AUDITOR"} aiOn={aiEnabled()} askSlot={<AskPanel compact />} />
+        <RecordCard d={d} ledgers={options} canWrite={ctx.role !== "AUDITOR"} aiOn={aiEnabled()} askSlot={<AskPanel compact />} initialDraftId={draft} />
       </div>
       <div className="grid content-start gap-4">
         <ProfitCard fyLabel={fyLabel(ctx.fy)} periodLabel={ctx.period.label} income={d.profit.income} expenses={d.profit.expenses} net={d.profit.net} />

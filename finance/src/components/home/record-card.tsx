@@ -1,5 +1,5 @@
 "use client";
-import { useRef, useState, useTransition } from "react";
+import { useEffect, useRef, useState, useTransition } from "react";
 import Link from "next/link";
 import { toast } from "sonner";
 import { Camera, ArrowRight, Loader2, Undo2, PencilLine, Flame, HeartPulse } from "lucide-react";
@@ -14,11 +14,17 @@ import type { HomeData } from "@/lib/dashboard";
 
 const SUGGESTIONS = ["Received ₹1.2L from a customer", "Paid salaries for last month", "Bought stationery ₹1,800 in cash"];
 
-export function RecordCard({ d, ledgers, canWrite, aiOn, askSlot }: { d: HomeData; ledgers: LedgerOption[]; canWrite: boolean; aiOn: boolean; askSlot: React.ReactNode }) {
+export function RecordCard({ d, ledgers, canWrite, aiOn, askSlot, initialDraftId }: { d: HomeData; ledgers: LedgerOption[]; canWrite: boolean; aiOn: boolean; askSlot: React.ReactNode; initialDraftId?: string }) {
   const [text, setText] = useState("");
   const [draft, setDraft] = useState<DraftView | null>(null);
   const [pending, start] = useTransition();
   const fileRef = useRef<HTMLInputElement>(null);
+
+  // Opened from "Amend" on a voucher: load that draft into the editor.
+  useEffect(() => {
+    if (!initialDraftId) return;
+    loadDraftAction(initialDraftId).then((r) => r.ok && setDraft(r.data));
+  }, [initialDraftId]);
 
   const run = (sentence: string) => {
     if (!sentence.trim()) return;

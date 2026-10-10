@@ -11,4 +11,4 @@ export function middleware(req: NextRequest) {
   return NextResponse.next();
 }
 
-export const config = { matcher: ["/((?!login|api/auth|api/health|_next|favicon|.*\\.).*)"] };
+export const config = { matcher: ["/((?!login|share|api/auth|api/health|_next|favicon|.*\\.).*)"] };
