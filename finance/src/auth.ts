@@ -47,6 +47,7 @@ if (process.env.ALLOW_DEMO_LOGIN === "true") {
 export const { handlers, auth, signIn, signOut } = NextAuth({
   adapter: PrismaAdapter(db),
   session: { strategy: "jwt" },
+  trustHost: true, // behind Vercel / reverse proxies
   pages: { signIn: "/login", verifyRequest: "/login?sent=1" },
   providers,
   callbacks: {
